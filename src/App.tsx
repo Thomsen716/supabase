@@ -28,6 +28,27 @@ const KnapperSignedIn = () => (
     </li>
   </ul>
 );
+
+const KnapperSignedOut = () => (
+  <ul className="flex flex-row space-x-4">
+    <li>
+      <a href="/forside" className="text-gray-300 hover:text-white">
+        Forside
+      </a>
+    </li>
+    <li>
+      <a href="om" className="text-gray-300 hover:text-white">
+        Om
+      </a>
+    </li>
+    <li>
+      <a href="indstillinger" className="text-gray-300 hover:text-white">
+        Om
+      </a>
+    </li>
+  </ul>
+);
+
 const Hjem = () => (
   <>
     <NavBar></NavBar>
@@ -36,6 +57,7 @@ const Hjem = () => (
 );
 const Om = () => <h1>Om os</h1>;
 const Forside = () => <h1>Forside</h1>;
+const Indstillinger = () => <h1>Indstilinger</h1>;
 
 function App() {
   return (
@@ -43,6 +65,7 @@ function App() {
       <Route path="/" element={<Hjem />}>
         <Route index element={<Forside />} /> {/* Standardvisning */}
         <Route path="om" element={<Om />} />
+        <Route path="indstillinger" element={<Indstillinger></Indstillinger>} />
       </Route>
     </Routes>
   );
