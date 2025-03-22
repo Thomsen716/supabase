@@ -1,3 +1,4 @@
+//import { useState } from "react";
 import { Routes, Route, Outlet } from "react-router";
 
 const NavBar = () => (
@@ -60,6 +61,8 @@ const Forside = () => <h1>Forside</h1>;
 const Indstillinger = () => <h1>Indstilinger</h1>;
 
 function App() {
+  // const [signedIn, setSignedIn] = useState(false);
+
   return (
     <Routes>
       <Route path="/" element={<Hjem />}>
