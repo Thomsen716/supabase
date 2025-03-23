@@ -5,7 +5,7 @@ function App() {
   const [signedIn, setSignedIn] = useState(true);
 
   const NavBar = () => (
-    <nav className="fixed top-0 left-0 w-full bg-blue-600 text-white shadow-md">
+    <nav className="bg-gray-800 p-4 w-full">
       <Brand></Brand>
       {signedIn ? <SignedInButtons /> : <SignedOutButtons />}
     </nav>
@@ -58,10 +58,18 @@ function App() {
     </ul>
   );
 
-  const Hjem = () => (
+  const Design = () => (
     <>
-      <NavBar></NavBar>
-      <Outlet></Outlet>
+      <div className="flex flex-col h-screen">
+        <nav className="bg-gray-800 p-4">
+          Navbar:
+          <NavBar></NavBar>
+        </nav>
+        <div className="flex-grow p-4 v-screen">
+          Indhold:
+          <Outlet></Outlet>
+        </div>
+      </div>
     </>
   );
   const Om = () => <h1>Om os</h1>;
@@ -73,7 +81,7 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Hjem />}>
+      <Route path="/" element={<Design />}>
         <Route path="" index element={<Forside />} />
         <Route path="forside" element={<Forside />} />
         {/* Standardvisning */}
