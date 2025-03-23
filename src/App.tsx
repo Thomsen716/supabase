@@ -1,10 +1,10 @@
 //import { useState } from "react";
-import { Routes, Route, Outlet } from "react-router";
+import { Routes, Route, Outlet, Link } from "react-router";
 
 const NavBar = () => (
   <nav className="fixed top-0 left-0 w-full bg-blue-600 text-white shadow-md">
     <Brand></Brand>
-    <KnapperSignedIn></KnapperSignedIn>
+    <SignedOutButtons></SignedOutButtons>
   </nav>
 );
 
@@ -15,37 +15,37 @@ const Brand = () => (
     </a>
   </div>
 );
-const KnapperSignedIn = () => (
+const SignedOutButtons = () => (
   <ul className="flex flex-row space-x-4">
     <li>
-      <a href="/forside" className="text-gray-300 hover:text-white">
+      <Link to="/forside" className="text-gray-300 hover:text-white">
         Forside
-      </a>
+      </Link>
     </li>
     <li>
-      <a href="om" className="text-gray-300 hover:text-white">
+      <Link to="om" className="text-gray-300 hover:text-white">
         Om
-      </a>
+      </Link>
     </li>
   </ul>
 );
 
-const KnapperSignedOut = () => (
+const SignedInButtons = () => (
   <ul className="flex flex-row space-x-4">
     <li>
-      <a href="/forside" className="text-gray-300 hover:text-white">
+      <Link to="/forside" className="text-gray-300 hover:text-white">
         Forside
-      </a>
+      </Link>
     </li>
     <li>
-      <a href="om" className="text-gray-300 hover:text-white">
+      <Link to="om" className="text-gray-300 hover:text-white">
         Om
-      </a>
+      </Link>
     </li>
     <li>
-      <a href="indstillinger" className="text-gray-300 hover:text-white">
+      <Link to="indstillinger" className="text-gray-300 hover:text-white">
         Om
-      </a>
+      </Link>
     </li>
   </ul>
 );
@@ -66,9 +66,10 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Hjem />}>
-        <Route index element={<Forside />} /> {/* Standardvisning */}
+        <Route index path="forside" element={<Forside />} />{" "}
+        {/* Standardvisning */}
         <Route path="om" element={<Om />} />
-        <Route path="indstillinger" element={<Indstillinger></Indstillinger>} />
+        <Route path="indstillinger" element={<Indstillinger />} />
       </Route>
     </Routes>
   );
