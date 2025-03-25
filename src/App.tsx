@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { Routes, Route, Outlet, Link } from "react-router";
 
-function NavBar() {
+function NavBar(props: {
+  signedIn: boolean;
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { signedIn, setSignedIn } = props;
   return (
     <nav className="bg-gray-800 p-4 w-full">
       <Brand></Brand>
-      <NavBarKnapper></NavBarKnapper>
+      <NavBarKnapper
+        signedIn={signedIn}
+        setSignedIn={setSignedIn}
+      ></NavBarKnapper>
     </nav>
   );
 }
@@ -20,9 +27,10 @@ function Brand() {
   );
 }
 
-function LogIndSide(
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>
-) {
+function LogIndSide(props: {
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { setSignedIn } = props;
   return (
     <>
       <h1 className="text-3xl">Log ind</h1>
@@ -74,152 +82,183 @@ function LogIndSide(
   );
 }
 
-const OpretBrugerSide = (
-  email: string,
-  setEmail: React.Dispatch<React.SetStateAction<string>>
-) => (
-  <>
-    <h1 className="text-3xl">Opret bruger</h1>
-    <form>
-      <div className="flex flex-col space-y-4">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Adgangskode
-          </label>
-          <input
-            type="password"
-            id="password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
+function OpretBrugerSide(props: {
+  email: string;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  password: string;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const { email, setEmail, password, setPassword } = props;
+  return (
+    <>
+      <h1 className="text-3xl">Opret bruger</h1>
+      <form>
+        <div className="flex flex-col space-y-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Adgangskode
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
             "
-            required
-          />
+              required
+            />
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                setEmail("adsfas@adsfasd.dk");
+                setPassword("test123");
+                //setSignedIn(true);
+              }}
+            >
+              Opret bruger
+            </button>
+          </div>
         </div>
-        <div>
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-              e.preventDefault();
-              setEmail("adsfas@adsfasd.dk");
-              setPassword("test123");
-              //setSignedIn(true);
-            }}
-          >
-            Opret bruger
-          </button>
+      </form>
+    </>
+  );
+}
+
+function NavBarKnapper(props: {
+  signedIn: boolean;
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { signedIn } = props;
+  return (
+    <ul className="flex flex-row space-x-4">
+      <li>
+        <Link to="forside" className="text-gray-300 hover:text-white">
+          Forside
+        </Link>
+      </li>
+      <li>
+        <Link to="om" className="text-gray-300 hover:text-white">
+          Om
+        </Link>
+      </li>
+      {signedIn ? (
+        <>
+          <li>
+            <Link to="indstillinger" className="text-gray-300 hover:text-white">
+              Indstillinger
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="forside"
+              onClick={() => {
+                LogUd(props.setSignedIn);
+              }}
+              className="text-gray-300 hover:text-white"
+            >
+              Log ud
+            </Link>
+          </li>
+        </>
+      ) : (
+        <>
+          <li>
+            <Link to="logind" className="text-gray-300 hover:text-white">
+              Log ind
+            </Link>
+          </li>
+          <li>
+            <Link to="opretbruger" className="text-gray-300 hover:text-white">
+              Opret bruger
+            </Link>
+          </li>
+        </>
+      )}
+    </ul>
+  );
+}
+
+function Design(props: {
+  signedIn: boolean;
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const { signedIn, setSignedIn } = props;
+  return (
+    <>
+      <div className="flex flex-col h-screen">
+        <nav className="bg-gray-800 p-4">
+          <NavBar signedIn={signedIn} setSignedIn={setSignedIn}></NavBar>
+        </nav>
+        <div className="flex-grow p-4 v-screen">
+          <Outlet></Outlet>
         </div>
       </div>
-    </form>
-  </>
-);
+    </>
+  );
+}
 
-const NavBarKnapper = (signedIn: boolean) => (
-  <ul className="flex flex-row space-x-4">
-    <li>
-      <Link to="forside" className="text-gray-300 hover:text-white">
-        Forside
-      </Link>
-    </li>
-    <li>
-      <Link to="om" className="text-gray-300 hover:text-white">
-        Om
-      </Link>
-    </li>
-    {signedIn ? (
-      <>
-        <li>
-          <Link to="indstillinger" className="text-gray-300 hover:text-white">
-            Indstillinger
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="forside"
-            onClick={LogUd}
-            className="text-gray-300 hover:text-white"
-          >
-            Log ud
-          </Link>
-        </li>
-      </>
-    ) : (
-      <>
-        <li>
-          <Link to="logind" className="text-gray-300 hover:text-white">
-            Log ind
-          </Link>
-        </li>
-        <li>
-          <Link to="opretbruger" className="text-gray-300 hover:text-white">
-            Opret bruger
-          </Link>
-        </li>
-      </>
-    )}
-  </ul>
-);
+function Om() {
+  return (
+    <>
+      <h1 className="text-3xl">Om</h1>
+    </>
+  );
+}
 
-const Design = () => (
-  <>
-    <div className="flex flex-col h-screen">
-      <nav className="bg-gray-800 p-4">
-        <NavBar></NavBar>
-      </nav>
-      <div className="flex-grow p-4 v-screen">
-        <Outlet></Outlet>
-      </div>
-    </div>
-  </>
-);
+function Forside(props: {
+  signedIn: boolean;
+  email: string;
+  password: string;
+}) {
+  const { signedIn, email, password } = props;
+  return (
+    <>
+      <h1 className="text-3xl">Forside</h1>{" "}
+      {signedIn ? (
+        <p>
+          Hej {email}. Du er logget ind. Dit password er {password}.
+        </p>
+      ) : (
+        <p>Du er ikke logget ind</p>
+      )}
+    </>
+  );
+}
 
-const Om = () => (
-  <>
-    <h1 className="text-3xl">Om</h1>
-  </>
-);
+function Indstillinger() {
+  return (
+    <>
+      <h1 className="text-3xl">Indstilinger</h1>
+    </>
+  );
+}
 
-const Forside = (signedIn: boolean, email: string, password: string) => (
-  <>
-    <h1 className="text-3xl">Forside</h1>{" "}
-    {signedIn ? (
-      <p>
-        Hej {email}. Du er logget ind. Dit password er {password}.
-      </p>
-    ) : (
-      <p>Du er ikke logget ind</p>
-    )}
-  </>
-);
-
-const Indstillinger = () => (
-  <>
-    <h1 className="text-3xl">Indstilinger</h1>
-  </>
-);
-
-const LogUd = (setSignedIn) => {
+function LogUd(setSignedIn: React.Dispatch<React.SetStateAction<boolean>>) {
   setSignedIn(false); // Skift tilstand til ikke-logget ind
-};
+}
 
 function App() {
   const [signedIn, setSignedIn] = useState(false);
@@ -228,11 +267,38 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Design />}>
-        <Route path="" index element={<Forside />} />
-        <Route path="forside" element={<Forside />} />
-        <Route path="logind" element={<LogIndSide />} />
-        <Route path="opretbruger" element={<OpretBrugerSide />} />
+      <Route
+        path="/"
+        element={<Design signedIn={signedIn} setSignedIn={setSignedIn} />}
+      >
+        <Route
+          path=""
+          index
+          element={
+            <Forside signedIn={signedIn} email={email} password={password} />
+          }
+        />
+        <Route
+          path="forside"
+          element={
+            <Forside signedIn={signedIn} email={email} password={password} />
+          }
+        />
+        <Route
+          path="logind"
+          element={<LogIndSide setSignedIn={setSignedIn} />}
+        />
+        <Route
+          path="opretbruger"
+          element={
+            <OpretBrugerSide
+              email={""}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+            />
+          }
+        />
         <Route path="om" element={<Om />} />
         <Route path="indstillinger" element={<Indstillinger />} />
       </Route>
