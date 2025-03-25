@@ -7,7 +7,7 @@ function App() {
   const NavBar = () => (
     <nav className="bg-gray-800 p-4 w-full">
       <Brand></Brand>
-      {signedIn ? <SignedInButtons /> : <SignedOutButtons />}
+      <NavBarKnapper></NavBarKnapper>
     </nav>
   );
 
@@ -18,27 +18,8 @@ function App() {
       </Link>
     </div>
   );
-  const SignedOutButtons = () => (
-    <ul className="flex flex-row space-x-4">
-      <li>
-        <Link to="forside" className="text-gray-300 hover:text-white">
-          Forside
-        </Link>
-      </li>
-      <li>
-        <Link to="om" className="text-gray-300 hover:text-white">
-          Om
-        </Link>
-      </li>
-      <li>
-        <Link to="logind" className="text-gray-300 hover:text-white">
-          Log ind
-        </Link>
-      </li>
-    </ul>
-  );
 
-  const SignInPage = () => (
+  const LogIndSide = () => (
     <>
       <h1 className="text-3xl">Log ind</h1>
       <form>
@@ -88,7 +69,7 @@ function App() {
     </>
   );
 
-  const SignedInButtons = () => (
+  const NavBarKnapper = () => (
     <ul className="flex flex-row space-x-4">
       <li>
         <Link to="forside" className="text-gray-300 hover:text-white">
@@ -100,20 +81,30 @@ function App() {
           Om
         </Link>
       </li>
-      <li>
-        <Link to="indstillinger" className="text-gray-300 hover:text-white">
-          Indstillinger
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="forside"
-          onClick={LogUd}
-          className="text-gray-300 hover:text-white"
-        >
-          Log ud
-        </Link>
-      </li>
+      {signedIn ? (
+        <>
+          <li>
+            <Link to="indstillinger" className="text-gray-300 hover:text-white">
+              Indstillinger
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="forside"
+              onClick={LogUd}
+              className="text-gray-300 hover:text-white"
+            >
+              Log ud
+            </Link>
+          </li>
+        </>
+      ) : (
+        <li>
+          <Link to="logind" className="text-gray-300 hover:text-white">
+            Log ind
+          </Link>
+        </li>
+      )}
     </ul>
   );
 
@@ -130,7 +121,12 @@ function App() {
     </>
   );
   const Om = () => <h1 className="text-3xl">Om</h1>;
-  const Forside = () => <h1 className="text-3xl">Forside</h1>;
+  const Forside = () => (
+    <>
+      <h1 className="text-3xl">Forside</h1>{" "}
+      {signedIn ? <p>Du er logget ind</p> : <p>Du er ikke logget ind</p>}
+    </>
+  );
   const Indstillinger = () => <h1 className="text-3xl">Indstilinger</h1>;
   const LogUd = () => {
     setSignedIn(false); // Skift tilstand til ikke-logget ind
@@ -141,7 +137,7 @@ function App() {
       <Route path="/" element={<Design />}>
         <Route path="" index element={<Forside />} />
         <Route path="forside" element={<Forside />} />
-        <Route path="logind" element={<SignInPage />} />
+        <Route path="logind" element={<LogIndSide />} />
         {/* Standardvisning */}
         <Route path="om" element={<Om />} />
         <Route path="indstillinger" element={<Indstillinger />} />
