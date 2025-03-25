@@ -256,8 +256,14 @@ function Indstillinger() {
   );
 }
 
-function LogUd(setSignedIn: React.Dispatch<React.SetStateAction<boolean>>) {
-  setSignedIn(false); // Skift tilstand til ikke-logget ind
+function LogUd(
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>,
+  setEmail: React.Dispatch<React.SetStateAction<string>>,
+  setPassword: React.Dispatch<React.SetStateAction<string>>
+) {
+  setEmail("");
+  setPassword("");
+  setSignedIn(false);
 }
 
 function App() {
@@ -292,7 +298,7 @@ function App() {
           path="opretbruger"
           element={
             <OpretBrugerSide
-              email={""}
+              email={email}
               setEmail={setEmail}
               password={password}
               setPassword={setPassword}
