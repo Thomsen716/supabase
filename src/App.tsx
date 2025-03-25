@@ -106,9 +106,13 @@ function App() {
         </Link>
       </li>
       <li>
-        <button onClick={LogUd} className="text-gray-300 hover:text-white">
+        <Link
+          to="forside"
+          onClick={LogUd}
+          className="text-gray-300 hover:text-white"
+        >
           Log ud
-        </button>
+        </Link>
       </li>
     </ul>
   );
