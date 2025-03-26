@@ -23,7 +23,7 @@ function NavBar(props: {
 
 function Brand() {
   return (
-    <div className="container mx-auto flex justify-between items-center p-4">
+    <div className="container mx-auto flex justify-between items-center">
       <Link to="forside" className="text-white text-lg font-bold">
         Brand
       </Link>
