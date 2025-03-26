@@ -4,14 +4,18 @@ import { Routes, Route, Outlet, Link } from "react-router";
 function NavBar(props: {
   signedIn: boolean;
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const { signedIn, setSignedIn } = props;
+  const { signedIn, setSignedIn, setEmail, setPassword } = props;
   return (
     <nav className="bg-gray-800 p-4 w-full">
       <Brand></Brand>
       <NavBarKnapper
         signedIn={signedIn}
         setSignedIn={setSignedIn}
+        setEmail={setEmail}
+        setPassword={setPassword}
       ></NavBarKnapper>
     </nav>
   );
@@ -150,6 +154,8 @@ function OpretBrugerSide(props: {
 function NavBarKnapper(props: {
   signedIn: boolean;
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const { signedIn } = props;
   return (
@@ -175,7 +181,7 @@ function NavBarKnapper(props: {
             <Link
               to="forside"
               onClick={() => {
-                LogUd(props.setSignedIn);
+                LogUd(props.setSignedIn, props.setEmail, props.setPassword);
               }}
               className="text-gray-300 hover:text-white"
             >
@@ -204,13 +210,20 @@ function NavBarKnapper(props: {
 function Design(props: {
   signedIn: boolean;
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const { signedIn, setSignedIn } = props;
+  const { signedIn, setSignedIn, setEmail, setPassword } = props;
   return (
     <>
       <div className="flex flex-col h-screen">
         <nav className="bg-gray-800 p-4">
-          <NavBar signedIn={signedIn} setSignedIn={setSignedIn}></NavBar>
+          <NavBar
+            signedIn={signedIn}
+            setSignedIn={setSignedIn}
+            setEmail={setEmail}
+            setPassword={setPassword}
+          ></NavBar>
         </nav>
         <div className="flex-grow p-4 v-screen">
           <Outlet></Outlet>
@@ -275,7 +288,14 @@ function App() {
     <Routes>
       <Route
         path="/"
-        element={<Design signedIn={signedIn} setSignedIn={setSignedIn} />}
+        element={
+          <Design
+            signedIn={signedIn}
+            setSignedIn={setSignedIn}
+            setPassword={setPassword}
+            setEmail={setEmail}
+          />
+        }
       >
         <Route
           path=""
