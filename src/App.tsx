@@ -33,8 +33,15 @@ function Brand() {
 
 function LogIndSide(props: {
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  email: string;
+  setEmail: React.Dispatch<React.SetStateAction<string>>;
+  password: string;
+  setPassword: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const { setSignedIn } = props;
+  const [emailField, setEmailField] = useState("");
+  const [passwordField, setPasswordField] = useState("");
+
+  const { setSignedIn, email, setEmail, password, setPassword } = props;
   return (
     <>
       <h1 className="text-3xl">Log ind</h1>
@@ -50,6 +57,8 @@ function LogIndSide(props: {
             <input
               type="email"
               id="email"
+              value={emailField}
+              onChange={(e) => setEmailField(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               required
             />
@@ -64,6 +73,8 @@ function LogIndSide(props: {
             <input
               type="password"
               id="password"
+              value={passwordField}
+              onChange={(e) => setPasswordField(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               required
             />
@@ -74,7 +85,11 @@ function LogIndSide(props: {
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
-                setSignedIn(true);
+                if (emailField === email && passwordField === password) {
+                  setEmail(emailField);
+                  setPassword(passwordField);
+                  setSignedIn(true);
+                }
               }}
             >
               Log ind
@@ -137,8 +152,6 @@ function OpretBrugerSide(props: {
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
-                setEmail("adsfas@adsfasd.dk");
-                setPassword("test123");
                 //setSignedIn(true);
               }}
             >
@@ -312,7 +325,15 @@ function App() {
         />
         <Route
           path="logind"
-          element={<LogIndSide setSignedIn={setSignedIn} />}
+          element={
+            <LogIndSide
+              setSignedIn={setSignedIn}
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+            />
+          }
         />
         <Route
           path="opretbruger"
