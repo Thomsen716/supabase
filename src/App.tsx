@@ -30,7 +30,7 @@ function LogIndSide() {
   return (
     <>
       <h1 className="text-3xl">Log ind</h1>
-      <form>
+      <form className="max-w-lg mx-auto">
         <div className="flex flex-col space-y-4">
           <div>
             <label
@@ -90,7 +90,7 @@ function OpretBrugerSide() {
   return (
     <>
       <h1 className="text-3xl">Opret bruger</h1>
-      <form>
+      <form className="max-w-lg mx-auto">
         <div className="flex flex-col space-y-4">
           <div>
             <label
