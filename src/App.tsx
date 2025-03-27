@@ -1,3 +1,4 @@
+import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import { Routes, Route, Outlet, Link } from "react-router";
 import {
@@ -9,18 +10,17 @@ import {
 function NavBar(props: {
   signedIn: boolean;
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
+  user: null | User;
+  setUser: React.Dispatch<React.SetStateAction<null | User>>;
 }) {
-  const { signedIn, setSignedIn, setEmail, setPassword } = props;
+  const { signedIn, setSignedIn, setUser } = props;
   return (
     <nav className="bg-gray-800 p-4 w-full">
       <Brand></Brand>
       <NavBarKnapper
         signedIn={signedIn}
         setSignedIn={setSignedIn}
-        setEmail={setEmail}
-        setPassword={setPassword}
+        setUser={setUser}
       ></NavBarKnapper>
     </nav>
   );
@@ -38,11 +38,12 @@ function Brand() {
 
 function LogIndSide(props: {
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setUser: React.Dispatch<React.SetStateAction<null | User>>;
 }) {
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
 
-  const { setSignedIn } = props;
+  const { setSignedIn, setUser } = props;
   return (
     <>
       <h1 className="text-3xl">Log ind</h1>
@@ -101,6 +102,7 @@ function LogIndSide(props: {
                 const { user, session } = data;
                 console.log(user, session);
                 if (user) {
+                  setUser(user);
                   setSignedIn(true);
                 }
               }}
@@ -195,10 +197,9 @@ function OpretBrugerSide(props: {
 function NavBarKnapper(props: {
   signedIn: boolean;
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
+  setUser: React.Dispatch<React.SetStateAction<null | User>>;
 }) {
-  const { signedIn } = props;
+  const { signedIn, setSignedIn, setUser } = props;
   return (
     <ul className="flex flex-row space-x-4">
       <li>
@@ -222,7 +223,7 @@ function NavBarKnapper(props: {
             <Link
               to="forside"
               onClick={() => {
-                LogUd(props.setSignedIn);
+                LogUd(setSignedIn, setUser);
               }}
               className="text-gray-300 hover:text-white"
             >
@@ -251,10 +252,10 @@ function NavBarKnapper(props: {
 function Design(props: {
   signedIn: boolean;
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
+  user: null | User;
+  setUser: React.Dispatch<React.SetStateAction<null | User>>;
 }) {
-  const { signedIn, setSignedIn, setEmail, setPassword } = props;
+  const { signedIn, setSignedIn, user, setUser } = props;
   return (
     <>
       <div className="flex flex-col h-screen">
@@ -262,8 +263,8 @@ function Design(props: {
           <NavBar
             signedIn={signedIn}
             setSignedIn={setSignedIn}
-            setEmail={setEmail}
-            setPassword={setPassword}
+            user={user}
+            setUser={setUser}
           ></NavBar>
         </nav>
         <div className="flex-grow p-4 v-screen">
@@ -311,7 +312,8 @@ function Indstillinger() {
 }
 
 async function LogUd(
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>,
+  setUser: React.Dispatch<React.SetStateAction<null | User>>
 ) {
   const { error } = await signOutSupabase();
   if (error) {
@@ -320,6 +322,7 @@ async function LogUd(
   } else {
     console.log("Signed out successfully");
     setSignedIn(false);
+    setUser(null);
   }
 }
 
@@ -327,6 +330,7 @@ function App() {
   const [signedIn, setSignedIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState<null | User>(null);
 
   return (
     <Routes>
@@ -336,8 +340,8 @@ function App() {
           <Design
             signedIn={signedIn}
             setSignedIn={setSignedIn}
-            setPassword={setPassword}
-            setEmail={setEmail}
+            user={user}
+            setUser={setUser}
           />
         }
       >
@@ -356,7 +360,7 @@ function App() {
         />
         <Route
           path="logind"
-          element={<LogIndSide setSignedIn={setSignedIn} />}
+          element={<LogIndSide setSignedIn={setSignedIn} setUser={setUser} />}
         />
         <Route
           path="opretbruger"
