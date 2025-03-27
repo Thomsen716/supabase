@@ -1,7 +1,7 @@
 import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import { Routes, Route, Outlet, Link } from "react-router";
-import { useAuth } from "./supabaseClient";
+import { useAuth } from "./Supabase";
 
 function NavBar(props: {
   signedIn: boolean;
