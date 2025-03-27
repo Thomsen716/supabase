@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { Routes, Route, Outlet, Link } from "react-router";
+import {
+  signInSupabase,
+  signOutSupabase,
+  signUpSupabase,
+} from "./supabaseClient";
 
 function NavBar(props: {
   signedIn: boolean;
@@ -33,15 +38,11 @@ function Brand() {
 
 function LogIndSide(props: {
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  email: string;
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  password: string;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
 
-  const { setSignedIn, email, setEmail, password, setPassword } = props;
+  const { setSignedIn } = props;
   return (
     <>
       <h1 className="text-3xl">Log ind</h1>
@@ -83,11 +84,23 @@ function LogIndSide(props: {
             <button
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
-                if (emailField === email && passwordField === password) {
-                  setEmail(emailField);
-                  setPassword(passwordField);
+                const { data, error } = await signInSupabase(
+                  emailField,
+                  passwordField
+                );
+                if (error) {
+                  console.error(error);
+                  return;
+                }
+                if (!data) {
+                  console.error("No data returned from signInSupabase");
+                  return;
+                }
+                const { user, session } = data;
+                console.log(user, session);
+                if (user) {
                   setSignedIn(true);
                 }
               }}
@@ -108,6 +121,21 @@ function OpretBrugerSide(props: {
   setPassword: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const { email, setEmail, password, setPassword } = props;
+
+  const signUp = async (email: string, password: string) => {
+    const { data, error } = await signUpSupabase(email, password);
+    if (error) {
+      console.error(error);
+      return;
+    }
+    if (!data) {
+      console.error("No data returned from signUpSupabase");
+      return;
+    }
+    const { user, session } = data;
+    console.log(user, session);
+  };
+
   return (
     <>
       <h1 className="text-3xl">Opret bruger</h1>
@@ -152,7 +180,7 @@ function OpretBrugerSide(props: {
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
-                //setSignedIn(true);
+                signUp(email, password);
               }}
             >
               Opret bruger
@@ -194,7 +222,7 @@ function NavBarKnapper(props: {
             <Link
               to="forside"
               onClick={() => {
-                LogUd(props.setSignedIn, props.setEmail, props.setPassword);
+                LogUd(props.setSignedIn);
               }}
               className="text-gray-300 hover:text-white"
             >
@@ -282,14 +310,17 @@ function Indstillinger() {
   );
 }
 
-function LogUd(
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>,
-  setEmail: React.Dispatch<React.SetStateAction<string>>,
-  setPassword: React.Dispatch<React.SetStateAction<string>>
+async function LogUd(
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>
 ) {
-  setEmail("");
-  setPassword("");
-  setSignedIn(false);
+  const { error } = await signOutSupabase();
+  if (error) {
+    console.error(error);
+    return;
+  } else {
+    console.log("Signed out successfully");
+    setSignedIn(false);
+  }
 }
 
 function App() {
@@ -325,15 +356,7 @@ function App() {
         />
         <Route
           path="logind"
-          element={
-            <LogIndSide
-              setSignedIn={setSignedIn}
-              email={email}
-              setEmail={setEmail}
-              password={password}
-              setPassword={setPassword}
-            />
-          }
+          element={<LogIndSide setSignedIn={setSignedIn} />}
         />
         <Route
           path="opretbruger"

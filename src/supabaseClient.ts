@@ -9,4 +9,16 @@ if (!PROJECT_URL || !ANON_KEY) {
 
 const supabase = createClient(PROJECT_URL, ANON_KEY);
 
-export { supabase };
+function signUpSupabase(email: string, password: string) {
+  return supabase.auth.signUp({ email, password });
+}
+
+function signInSupabase(email: string, password: string) {
+  return supabase.auth.signInWithPassword({ email, password });
+}
+
+function signOutSupabase() {
+  return supabase.auth.signOut();
+}
+
+export { supabase, signUpSupabase, signInSupabase, signOutSupabase };
