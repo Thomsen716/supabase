@@ -1,23 +1,13 @@
-import { User } from "@supabase/supabase-js";
 import { useState } from "react";
 import { Routes, Route, Outlet, Link } from "react-router";
 import { useAuth } from "./Supabase";
+import { AuthProvider } from "./Auth";
 
-function NavBar(props: {
-  signedIn: boolean;
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  user: null | User;
-  setUser: React.Dispatch<React.SetStateAction<null | User>>;
-}) {
-  const { signedIn, setSignedIn, setUser } = props;
+function NavBar() {
   return (
     <nav className="bg-gray-800 p-4 w-full">
       <Brand></Brand>
-      <NavBarKnapper
-        signedIn={signedIn}
-        setSignedIn={setSignedIn}
-        setUser={setUser}
-      ></NavBarKnapper>
+      <NavBarKnapper></NavBarKnapper>
     </nav>
   );
 }
@@ -32,15 +22,11 @@ function Brand() {
   );
 }
 
-function LogIndSide(props: {
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  setUser: React.Dispatch<React.SetStateAction<null | User>>;
-}) {
+function LogIndSide() {
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
 
-  const { setSignedIn, setUser } = props;
-  const { user, signInSupabase } = useAuth();
+  const { signInSupabase } = useAuth();
   return (
     <>
       <h1 className="text-3xl">Log ind</h1>
@@ -96,27 +82,10 @@ function LogIndSide(props: {
   );
 }
 
-function OpretBrugerSide(props: {
-  email: string;
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  password: string;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
-}) {
-  const { email, setEmail, password, setPassword } = props;
-
-  const signUp = async (email: string, password: string) => {
-    const { data, error } = await signUpSupabase(email, password);
-    if (error) {
-      console.error(error);
-      return;
-    }
-    if (!data) {
-      console.error("No data returned from signUpSupabase");
-      return;
-    }
-    const { user, session } = data;
-    console.log(user, session);
-  };
+function OpretBrugerSide() {
+  const [emailField, setEmailField] = useState("");
+  const [passwordField, setPasswordField] = useState("");
+  const signUpSupabase = useAuth().signUpSupabase;
 
   return (
     <>
@@ -133,8 +102,8 @@ function OpretBrugerSide(props: {
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={emailField}
+              onChange={(e) => setEmailField(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               required
             />
@@ -149,8 +118,8 @@ function OpretBrugerSide(props: {
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={passwordField}
+              onChange={(e) => setPasswordField(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
             "
               required
@@ -160,9 +129,25 @@ function OpretBrugerSide(props: {
             <button
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
-                signUp(email, password);
+                const { data, error } = await signUpSupabase(
+                  emailField,
+                  passwordField
+                );
+
+                if (error) {
+                  console.error(error);
+                  return;
+                }
+                if (data) {
+                  console.log("User created successfully");
+                }
+                setEmailField("");
+                setPasswordField("");
+                alert(
+                  "Bruger oprettet. Tjek din email for at bekræfte din konto."
+                );
               }}
             >
               Opret bruger
@@ -174,12 +159,8 @@ function OpretBrugerSide(props: {
   );
 }
 
-function NavBarKnapper(props: {
-  signedIn: boolean;
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  setUser: React.Dispatch<React.SetStateAction<null | User>>;
-}) {
-  const { signedIn, setSignedIn, setUser } = props;
+function NavBarKnapper() {
+  const { user, signOutSupabase } = useAuth();
   return (
     <ul className="flex flex-row space-x-4">
       <li>
@@ -192,7 +173,7 @@ function NavBarKnapper(props: {
           Om
         </Link>
       </li>
-      {signedIn ? (
+      {user ? (
         <>
           <li>
             <Link to="indstillinger" className="text-gray-300 hover:text-white">
@@ -202,8 +183,14 @@ function NavBarKnapper(props: {
           <li>
             <Link
               to="forside"
-              onClick={() => {
-                LogUd(setSignedIn, setUser);
+              onClick={async () => {
+                const { error } = await signOutSupabase();
+                if (error) {
+                  console.error(error);
+                  return;
+                }
+                console.log("User logged out successfully");
+                alert("Du er logget ud");
               }}
               className="text-gray-300 hover:text-white"
             >
@@ -229,23 +216,12 @@ function NavBarKnapper(props: {
   );
 }
 
-function Design(props: {
-  signedIn: boolean;
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  user: null | User;
-  setUser: React.Dispatch<React.SetStateAction<null | User>>;
-}) {
-  const { signedIn, setSignedIn, user, setUser } = props;
+function Design() {
   return (
     <>
       <div className="flex flex-col h-screen">
         <nav className="bg-gray-800 p-4">
-          <NavBar
-            signedIn={signedIn}
-            setSignedIn={setSignedIn}
-            user={user}
-            setUser={setUser}
-          ></NavBar>
+          <NavBar></NavBar>
         </nav>
         <div className="flex-grow p-4 v-screen">
           <Outlet></Outlet>
@@ -263,19 +239,13 @@ function Om() {
   );
 }
 
-function Forside(props: {
-  signedIn: boolean;
-  email: string;
-  password: string;
-}) {
-  const { signedIn, email, password } = props;
+function Forside() {
+  const { user } = useAuth();
   return (
     <>
       <h1 className="text-3xl">Forside</h1>{" "}
-      {signedIn ? (
-        <p>
-          Hej {email}. Du er logget ind. Dit password er {password}.
-        </p>
+      {user ? (
+        <p>Hej {user.email}. Du er logget ind.</p>
       ) : (
         <p>Du er ikke logget ind</p>
       )}
@@ -291,72 +261,20 @@ function Indstillinger() {
   );
 }
 
-async function LogUd(
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>,
-  setUser: React.Dispatch<React.SetStateAction<null | User>>
-) {
-  const { error } = await signOutSupabase();
-  if (error) {
-    console.error(error);
-    return;
-  } else {
-    console.log("Signed out successfully");
-    setSignedIn(false);
-    setUser(null);
-  }
-}
-
 function App() {
-  const [signedIn, setSignedIn] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [user, setUser] = useState<null | User>(null);
-
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <Design
-            signedIn={signedIn}
-            setSignedIn={setSignedIn}
-            user={user}
-            setUser={setUser}
-          />
-        }
-      >
-        <Route
-          path=""
-          index
-          element={
-            <Forside signedIn={signedIn} email={email} password={password} />
-          }
-        />
-        <Route
-          path="forside"
-          element={
-            <Forside signedIn={signedIn} email={email} password={password} />
-          }
-        />
-        <Route
-          path="logind"
-          element={<LogIndSide setSignedIn={setSignedIn} setUser={setUser} />}
-        />
-        <Route
-          path="opretbruger"
-          element={
-            <OpretBrugerSide
-              email={email}
-              setEmail={setEmail}
-              password={password}
-              setPassword={setPassword}
-            />
-          }
-        />
-        <Route path="om" element={<Om />} />
-        <Route path="indstillinger" element={<Indstillinger />} />
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<Design />}>
+          <Route path="" index element={<Forside />} />
+          <Route path="forside" element={<Forside />} />
+          <Route path="logind" element={<LogIndSide />} />
+          <Route path="opretbruger" element={<OpretBrugerSide />} />
+          <Route path="om" element={<Om />} />
+          <Route path="indstillinger" element={<Indstillinger />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 
