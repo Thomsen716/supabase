@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import {} from "@supabase/supabase-js";
+import { useContext } from "react";
+import { AuthContext } from "./Auth";
 
 const PROJECT_URL = import.meta.env.VITE_PROJECT_URL;
 const ANON_KEY = import.meta.env.VITE_ANON_KEY;
@@ -9,16 +12,12 @@ if (!PROJECT_URL || !ANON_KEY) {
 
 const supabase = createClient(PROJECT_URL, ANON_KEY);
 
-function signUpSupabase(email: string, password: string) {
-  return supabase.auth.signUp({ email, password });
-}
+const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
 
-function signInSupabase(email: string, password: string) {
-  return supabase.auth.signInWithPassword({ email, password });
-}
-
-function signOutSupabase() {
-  return supabase.auth.signOut();
-}
-
-export { supabase, signUpSupabase, signInSupabase, signOutSupabase };
+export { supabase, useAuth };
