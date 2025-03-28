@@ -72,9 +72,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -140,10 +138,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     firstName: string,
     lastName: string
   ) => {
-    const { error } = await supabase
-      .from("profiles")
-      .update({ first_name: firstName, last_name: lastName })
-      .eq("id", userId);
+    const { error } = await supabase.from("profiles").upsert(
+      { id: userId, first_name: firstName, last_name: lastName },
+      { onConflict: ["id"] } // Sikrer, at den kun opdaterer, hvis ID allerede findes
+    );
     if (error) {
       console.error(error);
       return { error };
@@ -164,7 +162,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export { AuthContext };
+export { AuthContext, AuthProvider };
 
 // I din App.tsx eller en anden top-level komponent:
 // import { AuthProvider } from './AuthContext';
