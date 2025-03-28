@@ -1,3 +1,9 @@
+# Formål
+
+Formålet med dette projekt er at lette udviklingen af React-applikationer med TypeScript og Vite samt med Supabase som database. Det er en minimal opsætning, der giver dig mulighed for hurtigt at komme i gang med at udvikle din applikation uden at skulle bekymre dig om konfigurationen.
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
