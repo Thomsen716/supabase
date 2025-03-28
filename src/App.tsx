@@ -254,9 +254,127 @@ function Forside() {
 }
 
 function Indstillinger() {
+  const { user } = useAuth();
+  const [fornavn, setFornavn] = useState("");
+  const [efternavn, setEfternavn] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+
   return (
     <>
       <h1 className="text-3xl">Indstilinger</h1>
+      <p>Her kan du ændre dine brugeroplysninger og andre indstillinger.</p>
+      <form className="max-w-lg mx-auto">
+        <div className="flex flex-col space-y-4">
+          <div>
+            <label
+              htmlFor="fornavn"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Fornavn
+            </label>
+            <input
+              type="text"
+              id="fornavn"
+              value={fornavn}
+              onChange={(e) => setFornavn(e.target.value)}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="efternavn"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Efternavn
+            </label>
+            <input
+              type="text"
+              id="efternavn"
+              value={efternavn}
+              onChange={(e) => setEfternavn(e.target.value)}
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Adgangskode
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="passwordConfirm"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Bekræft adgangskode
+            </label>
+            <input
+              type="password"
+              id="passwordconfirm"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              required
+            ></input>
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                //await signInSupabase(emailField, passwordField);
+                if (password !== passwordConfirm) {
+                  alert("Adgangskoderne stemmer ikke overens.");
+                  return;
+                }
+                if (password.length < 8) {
+                  alert("Adgangskoden skal være mindst 8 tegn lang.");
+                  return;
+                }
+                if (user) {
+                  console.log("Bruger opdateret:", user.email);
+                  alert("Brugeroplysninger opdateret.");
+                }
+                setFornavn("");
+                setEfternavn("");
+                setEmail("");
+                setPassword("");
+                setPasswordConfirm("");
+                alert("Brugeroplysninger opdateret.");
+              }}
+            >
+              Log ind
+            </button>
+          </div>
+        </div>
+      </form>
     </>
   );
 }
