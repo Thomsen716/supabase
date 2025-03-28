@@ -1,6 +1,12 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 
-import { AuthError, Session, User, WeakPassword } from "@supabase/supabase-js";
+import {
+  AuthError,
+  PostgrestError,
+  Session,
+  User,
+  WeakPassword,
+} from "@supabase/supabase-js";
 import { supabase } from "./Supabase";
 
 interface AuthContextType {
@@ -27,8 +33,8 @@ interface AuthContextType {
   // Definer returtypen
   signOutSupabase: () => Promise<
     | {
-        error: AuthError;
         data?: undefined;
+        error: AuthError;
       }
     | {
         data: boolean;
@@ -44,8 +50,22 @@ interface AuthContextType {
         data?: undefined;
       }
     | {
-        data: boolean;
         error?: undefined;
+        data: boolean;
+      }
+  >;
+  updateUserProfileSupabase: (
+    userId: string,
+    firstName: string,
+    lastName: string
+  ) => Promise<
+    | {
+        error: PostgrestError;
+        data?: undefined;
+      }
+    | {
+        error?: undefined;
+        data: boolean;
       }
   >;
 }
@@ -115,6 +135,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     return { data: true };
   };
 
+  const updateUserProfileSupabase = async (
+    userId: string,
+    firstName: string,
+    lastName: string
+  ) => {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ first_name: firstName, last_name: lastName })
+      .eq("id", userId);
+    if (error) {
+      console.error(error);
+      return { error };
+    }
+    return { data: true };
+  };
+
   const value: AuthContextType = {
     session,
     user,
@@ -122,6 +158,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     signInSupabase,
     signOutSupabase,
     signUpSupabase,
+    updateUserProfileSupabase,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

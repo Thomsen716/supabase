@@ -254,7 +254,7 @@ function Forside() {
 }
 
 function Indstillinger() {
-  const { user } = useAuth();
+  const { user, updateUserProfileSupabase } = useAuth();
   const [fornavn, setFornavn] = useState("");
   const [efternavn, setEfternavn] = useState("");
   const [email, setEmail] = useState("");
@@ -352,7 +352,7 @@ function Indstillinger() {
               onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 //await signInSupabase(emailField, passwordField);
-                if (password !== passwordConfirm) {
+                /*                 if (password !== passwordConfirm) {
                   alert("Adgangskoderne stemmer ikke overens.");
                   return;
                 }
@@ -363,7 +363,26 @@ function Indstillinger() {
                 if (user) {
                   console.log("Bruger opdateret:", user.email);
                   alert("Brugeroplysninger opdateret.");
+                } */
+                // Opdater brugeroplysninger i Supabase
+
+                if (!user) {
+                  alert(
+                    "Du skal være logget ind for at opdatere brugeroplysninger."
+                  );
+                  return;
                 }
+                const { data, error } = await updateUserProfileSupabase(
+                  user.id,
+                  fornavn,
+                  efternavn
+                );
+                if (error) {
+                  console.error(error);
+                  alert("Fejl ved opdatering af brugeroplysninger.");
+                  return;
+                }
+                console.log("Brugeroplysninger opdateret:", data);
                 setFornavn("");
                 setEfternavn("");
                 setEmail("");
