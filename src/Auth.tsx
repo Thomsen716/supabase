@@ -139,8 +139,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     lastName: string
   ) => {
     const { error } = await supabase.from("profiles").upsert(
-      { id: userId, first_name: firstName, last_name: lastName },
-      { onConflict: ["id"] } // Sikrer, at den kun opdaterer, hvis ID allerede findes
+      { user_id: userId, first_name: firstName, last_name: lastName },
+      { onConflict: "user_id" } // Sikrer, at den kun opdaterer, hvis ID allerede findes
     );
     if (error) {
       console.error(error);
