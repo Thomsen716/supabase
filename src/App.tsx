@@ -254,12 +254,22 @@ function Forside() {
 }
 
 function Indstillinger() {
-  const { user, updateUserProfileSupabase } = useAuth();
+  const { session, user, updateUserProfileSupabase } = useAuth();
   const [fornavn, setFornavn] = useState("");
   const [efternavn, setEfternavn] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+
+  if (!session || !user) {
+    // Hvis brugeren ikke er logget ind, vis en besked
+    return (
+      <>
+        <h1 className="text-3xl">Indstillinger</h1>
+        <p>Du skal være logget ind for at se denne side.</p>
+      </>
+    );
+  }
 
   return (
     <>

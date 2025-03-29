@@ -10,7 +10,12 @@ if (!PROJECT_URL || !ANON_KEY) {
   throw new Error("Missing environment variables!");
 }
 
-const supabase = createClient(PROJECT_URL, ANON_KEY);
+const supabase = createClient(PROJECT_URL, ANON_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+});
 
 const useAuth = () => {
   const context = useContext(AuthContext);

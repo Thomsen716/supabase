@@ -122,7 +122,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const signUpSupabase = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -130,6 +130,10 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       console.error(error);
       return { error };
     }
+
+    setSession(data.session);
+    setUser(data.user);
+
     return { data: true };
   };
 
@@ -138,9 +142,11 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     firstName: string,
     lastName: string
   ) => {
+    console.log("updateUserProfileSupabase", userId, firstName, lastName);
+
     const { error } = await supabase.from("profiles").upsert(
-      { user_id: userId, first_name: firstName, last_name: lastName },
-      { onConflict: "user_id" } // Sikrer, at den kun opdaterer, hvis ID allerede findes
+      { user_id: userId, first_name: firstName, last_name: lastName }
+      //{ onConflict: "user_id" } // Sikrer, at den kun opdaterer, hvis ID allerede findes
     );
     if (error) {
       console.error(error);
