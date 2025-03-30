@@ -255,7 +255,6 @@ function Forside() {
 
 function Indstillinger() {
   const { session, user, updateUserProfileSupabase } = useAuth();
-  console.log("Indstillinger", session, user);
   const [fornavn, setFornavn] = useState("");
   const [efternavn, setEfternavn] = useState("");
   const [email, setEmail] = useState("");
