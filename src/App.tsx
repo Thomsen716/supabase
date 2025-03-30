@@ -255,6 +255,7 @@ function Forside() {
 
 function Indstillinger() {
   const { session, user, updateUserProfileSupabase } = useAuth();
+  console.log("Indstillinger", session, user);
   const [fornavn, setFornavn] = useState("");
   const [efternavn, setEfternavn] = useState("");
   const [email, setEmail] = useState("");
@@ -361,20 +362,6 @@ function Indstillinger() {
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
-                //await signInSupabase(emailField, passwordField);
-                /*                 if (password !== passwordConfirm) {
-                  alert("Adgangskoderne stemmer ikke overens.");
-                  return;
-                }
-                if (password.length < 8) {
-                  alert("Adgangskoden skal være mindst 8 tegn lang.");
-                  return;
-                }
-                if (user) {
-                  console.log("Bruger opdateret:", user.email);
-                  alert("Brugeroplysninger opdateret.");
-                } */
-                // Opdater brugeroplysninger i Supabase
 
                 if (!user) {
                   alert(
