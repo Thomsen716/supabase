@@ -30,54 +30,17 @@ interface AuthContextType {
         error?: undefined;
       }
   >;
-  // Definer returtypen
-  signOutSupabase: () => Promise<
-    | {
-        data?: undefined;
-        error: AuthError;
-      }
-    | {
-        data: boolean;
-        error?: undefined;
-      }
-  >;
+
+  signOutSupabase: () => Promise<{ data?: boolean; error?: AuthError }>;
   signUpSupabase: (
     email: string,
     password: string
-  ) => Promise<
-    | {
-        error: AuthError;
-        data?: undefined;
-      }
-    | {
-        error?: undefined;
-        data: boolean;
-      }
-  >;
+  ) => Promise<{ data?: boolean; error?: AuthError }>;
   updateUserProfileSupabase: (
     userId: string,
     firstName: string,
     lastName: string
-  ) => Promise<
-    | {
-        error: PostgrestError;
-        data?: undefined;
-      }
-    | {
-        error?: undefined;
-        data: boolean;
-      }
-  >;
-  getUserProfileSupabase: (userId: string) => Promise<
-    | {
-        error: PostgrestError;
-        data?: undefined;
-      }
-    | {
-        error?: undefined;
-        data: { first_name: string; last_name: string };
-      }
-  >;
+  ) => Promise<{ data?: boolean; error?: PostgrestError }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
