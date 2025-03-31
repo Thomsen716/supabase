@@ -68,6 +68,16 @@ interface AuthContextType {
         data: boolean;
       }
   >;
+  getUserProfileSupabase: (userId: string) => Promise<
+    | {
+        error: PostgrestError;
+        data?: undefined;
+      }
+    | {
+        error?: undefined;
+        data: { first_name: string; last_name: string };
+      }
+  >;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -155,6 +165,20 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data: true };
   };
 
+  const getUserProfileSupabase = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("first_name, last_name")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return { error };
+    }
+    return { data };
+  };
+
   const value: AuthContextType = {
     session,
     user,
@@ -163,6 +187,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     signOutSupabase,
     signUpSupabase,
     updateUserProfileSupabase,
+    getUserProfileSupabase,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

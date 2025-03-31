@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Outlet, Link } from "react-router";
 import { useAuth } from "./Supabase";
 import { AuthProvider } from "./Auth";
@@ -254,13 +254,32 @@ function Forside() {
 }
 
 function Indstillinger() {
-  const { session, user, updateUserProfileSupabase } = useAuth();
+  const { session, user, updateUserProfileSupabase, getUserProfileSupabase } =
+    useAuth();
   console.log("Indstillinger", session, user);
   const [fornavn, setFornavn] = useState("");
   const [efternavn, setEfternavn] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user) {
+        const { data, error } = await getUserProfileSupabase(user.id);
+        if (error) {
+          console.error(error);
+          return;
+        }
+        if (data) {
+          setFornavn(data.first_name || "");
+          setEfternavn(data.last_name || "");
+          setEmail(user.email || "");
+        }
+      }
+    };
+    fetchUserProfile();
+  }, [user]);
 
   if (!session || !user) {
     // Hvis brugeren ikke er logget ind, vis en besked
