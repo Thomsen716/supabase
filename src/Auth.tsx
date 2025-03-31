@@ -41,6 +41,10 @@ interface AuthContextType {
     firstName: string,
     lastName: string
   ) => Promise<{ data?: boolean; error?: PostgrestError }>;
+  getUserProfileSupabase: (userId: string) => Promise<{
+    data?: { first_name: string; last_name: string };
+    error?: PostgrestError;
+  }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
