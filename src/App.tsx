@@ -416,6 +416,14 @@ function Indstillinger() {
   );
 }
 
+function TilføjNote() {
+  return (
+    <>
+      <h1 className="text-3xl">Tilføj note</h1>
+    </>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
