@@ -19,3 +19,7 @@ VITE_ANON_KEY = "Anonym nøgle (kan findes på supabases hjemmeside for projekte
 ```
 
 8. Åbn en terminal og start projektet med `npm run dev`.
+
+# Opsætning af Supabase
+
+1. Åbn en terminal og kør kommandoen `npx supabase login`. Følg instruktionerne for at logge ind.
