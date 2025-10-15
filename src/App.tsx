@@ -226,14 +226,12 @@ function OpretBrugerSide() {
                   console.error(error);
                   return;
                 }
-                if (data) {
-                  console.log("User created successfully");
-                }
+                console.log("Bruger oprettet:", data);
                 setEmailField("");
                 setPasswordField("");
-                alert(
-                  "Bruger oprettet. Tjek din email for at bekræfte din konto."
-                );
+                setConfirmPasswordField("");
+                setFornavnField("");
+                setEfternavnField("");
               }}
             >
               Opret bruger
