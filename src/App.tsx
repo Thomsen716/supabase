@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Outlet, Link } from "react-router";
+import { Routes, Route, Outlet, Link, useNavigate } from "react-router";
 import { useAuth } from "./Supabase";
 import { AuthProvider } from "./Auth";
 
@@ -161,6 +161,7 @@ function OpretBrugerSide() {
 
 function NavBarKnapper() {
   const { user, signOutSupabase } = useAuth();
+  const navigate = useNavigate();
   return (
     <ul className="flex flex-row space-x-4">
       <li>
@@ -176,6 +177,16 @@ function NavBarKnapper() {
       {user ? (
         <>
           <li>
+            <Link to="tilføjnote" className="text-gray-300 hover:text-white">
+              Tilføj note
+            </Link>
+          </li>
+          <li>
+            <Link to="visnoter" className="text-gray-300 hover:text-white">
+              Dine noter
+            </Link>
+          </li>
+          <li>
             <Link to="indstillinger" className="text-gray-300 hover:text-white">
               Indstillinger
             </Link>
@@ -188,9 +199,10 @@ function NavBarKnapper() {
                 if (error) {
                   console.error(error);
                   return;
+                } else {
+                  console.log("User signed out successfully");
+                  navigate("/loggetud");
                 }
-                console.log("User logged out successfully");
-                alert("Du er logget ud");
               }}
               className="text-gray-300 hover:text-white"
             >
@@ -420,6 +432,67 @@ function TilføjNote() {
   return (
     <>
       <h1 className="text-3xl">Tilføj note</h1>
+      <form className="max-w-lg mx-auto">
+        <div className="flex flex-col space-y-4">
+          <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Titel
+            </label>
+            <input
+              type="text"
+              id="title"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="note"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Note
+            </label>
+            <textarea
+              id="note"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              rows={4}
+            ></textarea>
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
+                e.preventDefault();
+                alert("Note tilføjet (funktionalitet ikke implementeret)");
+              }}
+            >
+              Tilføj note
+            </button>
+          </div>
+        </div>
+      </form>
+    </>
+  );
+}
+
+function VisNoter() {
+  return (
+    <>
+      <h1 className="text-3xl">Dine noter</h1>
+      <p>Her kan du se dine noter (funktionalitet ikke implementeret)</p>
+    </>
+  );
+}
+
+function DuErLoggetud() {
+  return (
+    <>
+      <h1 className="text-3xl">Du er logget ud</h1>
+      <p>Du er nu logget ud. Vi ses næste gang!</p>
     </>
   );
 }
@@ -435,6 +508,9 @@ function App() {
           <Route path="opretbruger" element={<OpretBrugerSide />} />
           <Route path="om" element={<Om />} />
           <Route path="indstillinger" element={<Indstillinger />} />
+          <Route path="tilføjnote" element={<TilføjNote />} />
+          <Route path="visnoter" element={<VisNoter />} />
+          <Route path="loggetud" element={<DuErLoggetud />} />
         </Route>
       </Routes>
     </AuthProvider>
