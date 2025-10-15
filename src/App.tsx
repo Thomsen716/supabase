@@ -291,7 +291,7 @@ function Indstillinger() {
       }
     };
     fetchUserProfile();
-  }, [user]);
+  }, [getUserProfileSupabase, user]);
 
   if (!session || !user) {
     // Hvis brugeren ikke er logget ind, vis en besked
