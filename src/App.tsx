@@ -14,7 +14,7 @@ function NavBar() {
 
 function Brand() {
   return (
-    <div className="container mx-auto flex justify-between items-center">
+    <div className="w-full mx-auto flex justify-between items-center">
       <Link to="forside" className="text-white text-lg font-bold">
         Brand
       </Link>
@@ -25,12 +25,13 @@ function Brand() {
 function LogIndSide() {
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
+  const navigate = useNavigate();
 
   const { signInSupabase } = useAuth();
   return (
     <>
       <h1 className="text-3xl">Log ind</h1>
-      <form className="max-w-lg mx-auto">
+      <form className="max-w-lg mx-auto mt-4">
         <div className="flex flex-col space-y-4">
           <div>
             <label
@@ -71,6 +72,9 @@ function LogIndSide() {
               onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 await signInSupabase(emailField, passwordField);
+                setEmailField("");
+                setPasswordField("");
+                navigate("/forside");
               }}
             >
               Log ind
@@ -83,15 +87,48 @@ function LogIndSide() {
 }
 
 function OpretBrugerSide() {
+  const [fornavnField, setFornavnField] = useState("");
+  const [efternavnField, setEfternavnField] = useState("");
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
+  const [confirmPasswordField, setConfirmPasswordField] = useState("");
   const signUpSupabase = useAuth().signUpSupabase;
 
   return (
     <>
       <h1 className="text-3xl">Opret bruger</h1>
-      <form className="max-w-lg mx-auto">
+      <form className="max-w-lg mx-auto mt-4">
         <div className="flex flex-col space-y-4">
+          <div>
+            <label
+              htmlFor="Fornavn"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Fornavn (valgfrit)
+            </label>
+            <input
+              type="text"
+              id="Fornavn"
+              value={fornavnField}
+              onChange={(e) => setFornavnField(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="Fornavn"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Efternavn (valgfrit)
+            </label>
+            <input
+              type="text"
+              id="Efternavn"
+              value={efternavnField}
+              onChange={(e) => setEfternavnField(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+          </div>
           <div>
             <label
               htmlFor="email"
@@ -126,11 +163,60 @@ function OpretBrugerSide() {
             />
           </div>
           <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Bekræft adgangskode
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={confirmPasswordField}
+              onChange={(e) => setConfirmPasswordField(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
+            "
+              required
+            />
+          </div>
+
+          <div>
             <button
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
+
+                if (passwordField !== confirmPasswordField) {
+                  alert("Adgangskoderne matcher ikke");
+                  return;
+                }
+
+                if (passwordField.length < 6) {
+                  alert("Adgangskoden skal være mindst 6 tegn lang");
+                  return;
+                }
+
+                if (emailField.length === 0) {
+                  alert("Email kan ikke være tom");
+                  return;
+                }
+
+                if (passwordField.length === 0) {
+                  alert("Adgangskode kan ikke være tom");
+                  return;
+                }
+
+                if (confirmPasswordField.length === 0) {
+                  alert("Bekræft adgangskode kan ikke være tom");
+                  return;
+                }
+
+                if (!emailField.includes("@")) {
+                  alert("Email skal være gyldig");
+                  return;
+                }
+
                 const { data, error } = await signUpSupabase(
                   emailField,
                   passwordField
@@ -257,9 +343,9 @@ function Forside() {
     <>
       <h1 className="text-3xl">Forside</h1>{" "}
       {user ? (
-        <p>Hej {user.email}. Du er logget ind.</p>
+        <p className="mt-4">Hej {user.email}. Du er logget ind.</p>
       ) : (
-        <p>Du er ikke logget ind</p>
+        <p className="mt-4">Du er ikke logget ind.</p>
       )}
     </>
   );
@@ -298,7 +384,7 @@ function Indstillinger() {
     return (
       <>
         <h1 className="text-3xl">Indstillinger</h1>
-        <p>Du skal være logget ind for at se denne side.</p>
+        <p className="mt-4">Du skal være logget ind for at se denne side.</p>
       </>
     );
   }
@@ -306,8 +392,10 @@ function Indstillinger() {
   return (
     <>
       <h1 className="text-3xl">Indstilinger</h1>
-      <p>Her kan du ændre dine brugeroplysninger og andre indstillinger.</p>
-      <form className="max-w-lg mx-auto">
+      <p className="mt-4">
+        Her kan du ændre dine brugeroplysninger og andre indstillinger.
+      </p>
+      <form className="max-w-lg mx-auto mt-4">
         <div className="flex flex-col space-y-4">
           <div>
             <label
@@ -492,7 +580,7 @@ function DuErLoggetud() {
   return (
     <>
       <h1 className="text-3xl">Du er logget ud</h1>
-      <p>Du er nu logget ud. Vi ses næste gang!</p>
+      <p className="mt-4">Du er nu logget ud. Vi ses næste gang!</p>
     </>
   );
 }
