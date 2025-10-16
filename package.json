@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:start": "npx supabase db reset --yes && npx supabase db push && npm run dev"
   },
   "dependencies": {
     "@supabase/auth-ui-react": "^0.4.7",
