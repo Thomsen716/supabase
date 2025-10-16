@@ -47,6 +47,13 @@ interface AuthContextType {
     data?: { first_name: string; last_name: string };
     error?: PostgrestError;
   }>;
+  addNote: (
+    title: string,
+    content: string
+  ) => Promise<{
+    data?: { id: number; title: string; content: string; created_at: string };
+    error?: PostgrestError;
+  }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -156,6 +163,20 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data };
   };
 
+  const addNote = async (title: string, content: string) => {
+    const { data, error } = await supabase
+      .from("notes")
+      .insert([{ user_id: user?.id, title, content }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error(error);
+      return { error };
+    }
+    return { data };
+  };
+
   const value: AuthContextType = {
     session,
     user,
@@ -165,6 +186,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     signUpSupabase,
     updateUserProfileSupabase,
     getUserProfileSupabase,
+    addNote,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
