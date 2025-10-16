@@ -54,6 +54,17 @@ interface AuthContextType {
     data?: { id: number; title: string; content: string; created_at: string };
     error?: PostgrestError;
   }>;
+  showNote: (
+    userId: string,
+    noteId: string
+  ) => Promise<{
+    data?: { id: number; title: string; content: string; created_at: string };
+    error?: PostgrestError;
+  }>;
+  listNotes: (userId: string) => Promise<{
+    data?: { id: number; title: string; content: string; created_at: string }[];
+    error?: PostgrestError;
+  }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
