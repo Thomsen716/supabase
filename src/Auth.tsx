@@ -188,6 +188,35 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data };
   };
 
+  const showNote = async (userId: string, noteId: string) => {
+    const { data, error } = await supabase
+      .from("notes")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("id", noteId)
+      .single();
+
+    if (error) {
+      console.error(error);
+      return { error };
+    }
+    return { data };
+  };
+
+  const listNotes = async () => {
+    const { data, error } = await supabase
+      .from("notes")
+      .select("*")
+      .eq("user_id", user?.id)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return { error };
+    }
+    return { data };
+  };
+
   const value: AuthContextType = {
     session,
     user,
@@ -198,6 +227,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     updateUserProfileSupabase,
     getUserProfileSupabase,
     addNote,
+    showNote,
+    listNotes,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -592,10 +592,76 @@ function TilføjNote() {
 }
 
 function VisNoter() {
+  const { listNotes, user } = useAuth();
+  const navigate = useNavigate();
+  const [notes, setNotes] = useState<Array<any>>([]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/logind");
+    } else {
+      const fetchNotes = async () => {
+        const { data, error } = await listNotes(user.id);
+        if (error) {
+          console.error("Fejl ved hentning af noter:", error);
+          return;
+        }
+        console.log("Noter hentet:", data);
+        setNotes(data || []);
+      };
+      fetchNotes();
+    }
+  }, [listNotes, navigate, user]);
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <>
       <h1 className="text-3xl">Dine noter</h1>
-      <p>Her kan du se dine noter (funktionalitet ikke implementeret)</p>
+
+      <p className="mt-4">Her kan du se dine noter.</p>
+
+      <table className="min-w-full divide-y divide-gray-200 mt-4">
+        <thead className="bg-gray-50">
+          <tr>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Titel
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Note
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Oprettet
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {notes.map((note) => (
+            <tr key={note.id}>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {note.title}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {note.content}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {new Date(note.created_at).toLocaleString()}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   );
 }

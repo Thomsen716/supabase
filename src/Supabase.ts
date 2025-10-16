@@ -25,18 +25,4 @@ const useAuth = () => {
   return context;
 };
 
-const addNote = async (title: string, content: string) => {
-  const { data, error } = await supabase
-    .from("notes")
-    .insert([{ title, content }])
-    .select()
-    .single();
-
-  if (error) {
-    throw error;
-  }
-
-  return data;
-};
-
-export { supabase, useAuth, addNote };
+export { supabase, useAuth };
