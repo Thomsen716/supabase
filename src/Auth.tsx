@@ -39,11 +39,10 @@ interface AuthContextType {
     lastName?: string
   ) => Promise<{ data?: boolean; error?: AuthError }>;
   updateUserProfileSupabase: (
-    userId: string,
     firstName: string,
     lastName: string
   ) => Promise<{ data?: boolean; error?: PostgrestError }>;
-  getUserProfileSupabase: (userId: string) => Promise<{
+  getUserProfileSupabase: () => Promise<{
     data?: { first_name: string; last_name: string };
     error?: PostgrestError;
   }>;
@@ -61,7 +60,7 @@ interface AuthContextType {
     data?: { id: number; title: string; content: string; created_at: string };
     error?: PostgrestError;
   }>;
-  listNotes: (userId: string) => Promise<{
+  listNotes: () => Promise<{
     data?: { id: number; title: string; content: string; created_at: string }[];
     error?: PostgrestError;
   }>;
@@ -143,14 +142,11 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   const updateUserProfileSupabase = async (
-    userId: string,
     firstName: string,
     lastName: string
   ) => {
-    console.log("updateUserProfileSupabase", userId, firstName, lastName);
-
     const { error } = await supabase.from("users").upsert(
-      { user_id: userId, first_name: firstName, last_name: lastName }
+      { id: user?.id, first_name: firstName, last_name: lastName }
       //{ onConflict: "user_id" } // Sikrer, at den kun opdaterer, hvis ID allerede findes
     );
     if (error) {
@@ -160,11 +156,11 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data: true };
   };
 
-  const getUserProfileSupabase = async (userId: string) => {
+  const getUserProfileSupabase = async () => {
     const { data, error } = await supabase
-      .from("profiles")
+      .from("users")
       .select("first_name, last_name")
-      .eq("user_id", userId)
+      .eq("id", user?.id)
       .single();
 
     if (error) {
@@ -188,11 +184,11 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data };
   };
 
-  const showNote = async (userId: string, noteId: string) => {
+  const showNote = async (noteId: string) => {
     const { data, error } = await supabase
       .from("notes")
       .select("*")
-      .eq("user_id", userId)
+      .eq("user_id", user?.id)
       .eq("id", noteId)
       .single();
 
@@ -229,39 +225,9 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     addNote,
     showNote,
     listNotes,
-  };
+  } satisfies AuthContextType;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export { AuthContext, AuthProvider };
-
-// I din App.tsx eller en anden top-level komponent:
-// import { AuthProvider } from './AuthContext';
-//
-// function App() {
-//   return (
-//     <AuthProvider>
-//       {/* Dine andre komponenter */}
-//     </AuthProvider>
-//   );
-// }
-
-// I en komponent, hvor du har brug for session-oplysninger:
-// import { useAuth } from './AuthContext';
-//
-// const MyComponent: React.FC = () => {
-//   const { session, user } = useAuth();
-//
-//   if (session) {
-//     console.log('Session:', session); // TypeScript ved, at session er af typen Session | null
-//     console.log('Bruger:', user); // TypeScript ved, at user er af typen User | null
-//     // Brug session.access_token til API-kald osv.
-//   }
-//
-//   return (
-//     <div>
-//       {user ? <p>Velkommen, {user.email}</p> : <p>Du er ikke logget ind</p>}
-//     </div>
-//   );
-// };

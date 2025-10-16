@@ -364,7 +364,7 @@ function Indstillinger() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (user) {
-        const { data, error } = await getUserProfileSupabase(user.id);
+        const { data, error } = await getUserProfileSupabase();
         if (error) {
           console.error(error);
           return;
@@ -489,7 +489,6 @@ function Indstillinger() {
                   return;
                 }
                 const { data, error } = await updateUserProfileSupabase(
-                  user.id,
                   fornavn,
                   efternavn
                 );
@@ -601,7 +600,7 @@ function VisNoter() {
       navigate("/logind");
     } else {
       const fetchNotes = async () => {
-        const { data, error } = await listNotes(user.id);
+        const { data, error } = await listNotes();
         if (error) {
           console.error("Fejl ved hentning af noter:", error);
           return;
