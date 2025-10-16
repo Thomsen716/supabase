@@ -219,7 +219,9 @@ function OpretBrugerSide() {
 
                 const { data, error } = await signUpSupabase(
                   emailField,
-                  passwordField
+                  passwordField,
+                  fornavnField,
+                  efternavnField
                 );
 
                 if (error) {

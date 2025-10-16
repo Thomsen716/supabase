@@ -34,7 +34,9 @@ interface AuthContextType {
   signOutSupabase: () => Promise<{ data?: boolean; error?: AuthError }>;
   signUpSupabase: (
     email: string,
-    password: string
+    password: string,
+    firstName?: string,
+    lastName?: string
   ) => Promise<{ data?: boolean; error?: AuthError }>;
   updateUserProfileSupabase: (
     userId: string,
@@ -98,10 +100,18 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data: true };
   };
 
-  const signUpSupabase = async (email: string, password: string) => {
+  const signUpSupabase = async (
+    email: string,
+    password: string,
+    firstName?: string,
+    lastName?: string
+  ) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: { first_name: firstName, last_name: lastName },
+      },
     });
     if (error) {
       console.error(error);
