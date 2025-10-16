@@ -64,6 +64,14 @@ interface AuthContextType {
     data?: { id: number; title: string; content: string; created_at: string }[];
     error?: PostgrestError;
   }>;
+  deleteNote: (
+    noteId: string
+  ) => Promise<{ data?: boolean; error?: PostgrestError }>;
+  updateNote: (
+    noteId: string,
+    title: string,
+    content: string
+  ) => Promise<{ data?: boolean; error?: PostgrestError }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -213,6 +221,34 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data };
   };
 
+  const deleteNote = async (noteId: string) => {
+    const { error } = await supabase
+      .from("notes")
+      .delete()
+      .eq("id", noteId)
+      .eq("user_id", user?.id);
+
+    if (error) {
+      console.error(error);
+      return { error };
+    }
+    return { data: true };
+  };
+
+  const updateNote = async (noteId: string, title: string, content: string) => {
+    const { error } = await supabase
+      .from("notes")
+      .update({ title, content })
+      .eq("id", noteId)
+      .eq("user_id", user?.id);
+
+    if (error) {
+      console.error(error);
+      return { error };
+    }
+    return { data: true };
+  };
+
   const value: AuthContextType = {
     session,
     user,
@@ -225,6 +261,8 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     addNote,
     showNote,
     listNotes,
+    deleteNote,
+    updateNote,
   } satisfies AuthContextType;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

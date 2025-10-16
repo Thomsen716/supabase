@@ -339,11 +339,26 @@ function Om() {
 
 function Forside() {
   const { user } = useAuth();
+  let userDataToDisplay;
+
+  if (user) {
+    if (
+      user.user_metadata &&
+      (user.user_metadata.first_name || user.user_metadata.last_name)
+    ) {
+      userDataToDisplay = `${user.user_metadata.first_name || ""} ${
+        user.user_metadata.last_name || ""
+      }`.trim();
+    } else {
+      userDataToDisplay = user.email;
+    }
+  }
+
   return (
     <>
       <h1 className="text-3xl">Forside</h1>{" "}
       {user ? (
-        <p className="mt-4">Hej {user.email}. Du er logget ind.</p>
+        <p className="mt-4">Hej {userDataToDisplay}. Du er logget ind.</p>
       ) : (
         <p className="mt-4">Du er ikke logget ind.</p>
       )}
@@ -590,6 +605,42 @@ function TilføjNote() {
   );
 }
 
+function SletNote({
+  noteId,
+  setNotes,
+}: {
+  noteId: string;
+  setNotes: React.Dispatch<React.SetStateAction<any[]>>;
+}) {
+  const { deleteNote, listNotes } = useAuth();
+  return (
+    <button
+      className="text-red-600 hover:text-red-800"
+      onClick={async () => {
+        const { data, error } = await deleteNote(noteId);
+        if (error) {
+          console.error("Fejl ved sletning af note:", error);
+          alert("Fejl ved sletning af note.");
+          return;
+        } else {
+          console.log("Note slettet:", data);
+          alert("Note slettet.");
+          const { data: updatedNotes, error: listError } = await listNotes();
+          if (listError) {
+            console.error("Fejl ved opdatering af noter:", listError);
+            return;
+          }
+          if (updatedNotes) {
+            setNotes(updatedNotes);
+          }
+        }
+      }}
+    >
+      Slet
+    </button>
+  );
+}
+
 function VisNoter() {
   const { listNotes, user } = useAuth();
   const navigate = useNavigate();
@@ -656,6 +707,9 @@ function VisNoter() {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {new Date(note.created_at).toLocaleString()}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <SletNote noteId={note.id} setNotes={setNotes} />
               </td>
             </tr>
           ))}
