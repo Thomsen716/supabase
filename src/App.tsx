@@ -9,6 +9,7 @@ import {
 } from "react-router";
 import { useAuth } from "./Supabase";
 import { AuthProvider } from "./Auth";
+import { SiGoogle, SiFacebook, SiGithub } from "react-icons/si";
 
 function NavBar() {
   return (
@@ -86,6 +87,9 @@ function LogIndSide() {
             >
               Log ind
             </button>
+          </div>
+          <div className="flex justify-center">
+            <OAuthButtons></OAuthButtons>
           </div>
         </div>
       </form>
@@ -782,6 +786,30 @@ function DuErLoggetud() {
       <h1 className="text-3xl">Du er logget ud</h1>
       <p className="mt-4">Du er nu logget ud. Vi ses næste gang!</p>
     </>
+  );
+}
+
+function OAuthButtons() {
+  return (
+    <div className="flex flex-col items-center space-y-4">
+      <h2 className="text-gray-500 uppercase font-medium text-sm">
+        Eller log ind med
+      </h2>
+
+      <div className="flex space-x-4">
+        <button className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
+          <SiGoogle className="w-4 h-4 text-white" />
+        </button>
+
+        <button className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400">
+          <SiFacebook className="w-4 h-4 text-white" />
+        </button>
+
+        <button className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+          <SiGithub className="w-4 h-4 text-white" />
+        </button>
+      </div>
+    </div>
   );
 }
 
