@@ -53,10 +53,7 @@ interface AuthContextType {
     data?: { id: number; title: string; content: string; created_at: string };
     error?: PostgrestError;
   }>;
-  showNote: (
-    userId: string,
-    noteId: string
-  ) => Promise<{
+  showNote: (noteId: string) => Promise<{
     data?: { id: number; title: string; content: string; created_at: string };
     error?: PostgrestError;
   }>;

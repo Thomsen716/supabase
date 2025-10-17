@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Routes, Route, Outlet, Link, useNavigate } from "react-router";
+import {
+  Routes,
+  Route,
+  Outlet,
+  Link,
+  useNavigate,
+  useParams,
+} from "react-router";
 import { useAuth } from "./Supabase";
 import { AuthProvider } from "./Auth";
 
@@ -533,13 +540,34 @@ function Indstillinger() {
 function TilføjNote() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
-  const { addNote, user } = useAuth();
+  const { addNote, showNote, user } = useAuth();
   const navigate = useNavigate();
+  const { noteId } = useParams<{ noteId: string }>();
 
   if (!user) {
     navigate("/logind");
     return null;
   }
+
+  useEffect(() => {
+    if (noteId) {
+      const fetchNote = async () => {
+        const { data, error } = await showNote(noteId);
+        if (error) {
+          console.error("Fejl ved hentning af note:", error);
+          return;
+        }
+        if (data) {
+          setTitle(data.title);
+          setNote(data.content);
+        }
+      };
+      fetchNote();
+    } else {
+      setTitle("");
+      setNote("");
+    }
+  }, [noteId]);
 
   return (
     <>
@@ -596,12 +624,26 @@ function TilføjNote() {
                 }
               }}
             >
-              Tilføj note
+              {noteId ? "Opdater note" : "Tilføj note"}
             </button>
           </div>
         </div>
       </form>
     </>
+  );
+}
+
+function RedigerNote({ noteId }: { noteId: string }) {
+  const navigate = useNavigate();
+  return (
+    <button
+      className="text-red-600 hover:text-red-800"
+      onClick={async () => {
+        navigate("/tilføjnote/" + noteId); // Placeholder navigation
+      }}
+    >
+      Rediger
+    </button>
   );
 }
 
@@ -694,6 +736,16 @@ function VisNoter() {
             >
               Oprettet
             </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Opdateret
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            ></th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -708,7 +760,12 @@ function VisNoter() {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {new Date(note.created_at).toLocaleString()}
               </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {new Date(note.updated_at).toLocaleString()}
+              </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <RedigerNote noteId={note.id} />
+                {" | "}
                 <SletNote noteId={note.id} setNotes={setNotes} />
               </td>
             </tr>
@@ -740,6 +797,7 @@ function App() {
           <Route path="om" element={<Om />} />
           <Route path="indstillinger" element={<Indstillinger />} />
           <Route path="tilføjnote" element={<TilføjNote />} />
+          <Route path="tilføjnote/:noteId" element={<TilføjNote />} />
           <Route path="visnoter" element={<VisNoter />} />
           <Route path="loggetud" element={<DuErLoggetud />} />
         </Route>
