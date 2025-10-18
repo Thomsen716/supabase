@@ -390,6 +390,7 @@ function Indstillinger() {
   const { session, user, updateUserProfileSupabase, getUserProfileSupabase } =
     useAuth();
   console.log("Indstillinger", session, user);
+  console.log("Login-metode:", user?.identities[0]?.provider);
   const [fornavn, setFornavn] = useState("");
   const [efternavn, setEfternavn] = useState("");
   const [email, setEmail] = useState("");
@@ -427,6 +428,11 @@ function Indstillinger() {
   return (
     <>
       <h1 className="text-3xl">Indstilinger</h1>
+      {user && (
+        <p>
+          Logged in with: {user.identities?.map((i) => i.provider).join(", ")}
+        </p>
+      )}
       <p className="mt-4">
         Her kan du ændre dine brugeroplysninger og andre indstillinger.
       </p>
@@ -809,11 +815,21 @@ function OAuthButtons() {
           <SiGoogle className="w-4 h-4 text-white" />
         </button>
 
-        <button className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400">
+        <button
+          className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
+          onClick={async () => {
+            await signInWithOAuthSupabase("facebook");
+          }}
+        >
           <SiFacebook className="w-4 h-4 text-white" />
         </button>
 
-        <button className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+        <button
+          className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          onClick={async () => {
+            await signInWithOAuthSupabase("github");
+          }}
+        >
           <SiGithub className="w-4 h-4 text-white" />
         </button>
       </div>
@@ -877,6 +893,25 @@ function App() {
           <Route path="tilføjnote/:noteId" element={<TilføjNote />} />
           <Route path="visnoter" element={<VisNoter />} />
           <Route path="loggetud" element={<DuErLoggetud />} />
+          // catch-all route for undefined paths
+          <Route
+            path="*"
+            element={
+              <div>
+                <h1 className="text-3xl">Side ikke fundet</h1>
+                <p className="mt-4">
+                  Den side, du leder efter, findes ikke. Gå tilbage til{" "}
+                  <Link
+                    to="/forside"
+                    className="text-indigo-600 hover:text-indigo-500"
+                  >
+                    forsiden
+                  </Link>
+                  .
+                </p>
+              </div>
+            }
+          />
         </Route>
       </Routes>
     </AuthProvider>
