@@ -798,6 +798,21 @@ function DuErLoggetud() {
   );
 }
 
+function SideIkkeFundet() {
+  return (
+    <>
+      <h1 className="text-3xl">Side ikke fundet</h1>
+      <p className="mt-4">
+        Den side, du leder efter, findes ikke. Gå tilbage til{" "}
+        <Link to="/forside" className="text-indigo-600 hover:text-indigo-500">
+          forsiden
+        </Link>
+        .
+      </p>
+    </>
+  );
+}
+
 function OAuthButtons() {
   const { signInWithOAuthSupabase } = useAuth();
   return (
@@ -893,25 +908,7 @@ function App() {
           <Route path="tilføjnote/:noteId" element={<TilføjNote />} />
           <Route path="visnoter" element={<VisNoter />} />
           <Route path="loggetud" element={<DuErLoggetud />} />
-          // catch-all route for undefined paths
-          <Route
-            path="*"
-            element={
-              <div>
-                <h1 className="text-3xl">Side ikke fundet</h1>
-                <p className="mt-4">
-                  Den side, du leder efter, findes ikke. Gå tilbage til{" "}
-                  <Link
-                    to="/forside"
-                    className="text-indigo-600 hover:text-indigo-500"
-                  >
-                    forsiden
-                  </Link>
-                  .
-                </p>
-              </div>
-            }
-          />
+          <Route path="*" element={<SideIkkeFundet />} />
         </Route>
       </Routes>
     </AuthProvider>
