@@ -7,7 +7,15 @@ import {
   User,
   WeakPassword,
 } from "@supabase/supabase-js";
-import { supabase } from "./Supabase";
+import { supabase, SUPPORTED_PROVIDERS } from "./Supabase";
+
+export interface Note {
+  id: number;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
 
 interface AuthContextType {
   session: Session | null;
@@ -30,7 +38,7 @@ interface AuthContextType {
         error?: undefined;
       }
   >;
-
+  signInWithOAuthSupabase: (provider: string) => Promise<void>;
   signOutSupabase: () => Promise<{ data?: boolean; error?: AuthError }>;
   signUpSupabase: (
     email: string,
@@ -50,22 +58,22 @@ interface AuthContextType {
     title: string,
     content: string
   ) => Promise<{
-    data?: { id: number; title: string; content: string; created_at: string };
+    data?: Note;
     error?: PostgrestError;
   }>;
   showNote: (noteId: string) => Promise<{
-    data?: { id: number; title: string; content: string; created_at: string };
+    data?: Note;
     error?: PostgrestError;
   }>;
   listNotes: () => Promise<{
-    data?: { id: number; title: string; content: string; created_at: string }[];
+    data?: Note[];
     error?: PostgrestError;
   }>;
   deleteNote: (
-    noteId: string
+    noteId: number
   ) => Promise<{ data?: boolean; error?: PostgrestError }>;
   updateNote: (
-    noteId: string,
+    noteId: number,
     title: string,
     content: string
   ) => Promise<{ data?: boolean; error?: PostgrestError }>;
@@ -146,6 +154,31 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data: true };
   };
 
+  const signInWithOAuthSupabase = async (provider: string) => {
+    // Tjek om provider findes i SUPPORTED_PROVIDERS
+    if (
+      !SUPPORTED_PROVIDERS.includes(
+        provider as (typeof SUPPORTED_PROVIDERS)[number]
+      )
+    ) {
+      console.error("Ugyldig provider:", provider);
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: provider as (typeof SUPPORTED_PROVIDERS)[number], // ✅ type-sikker cast
+      options: {
+        redirectTo: window.location.origin + "/forside",
+      },
+    });
+
+    if (error) {
+      console.error("OAuth login fejl:", error);
+    } else {
+      console.log("Redirecting til provider...", data);
+    }
+  };
+
   const updateUserProfileSupabase = async (
     firstName: string,
     lastName: string
@@ -218,7 +251,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data };
   };
 
-  const deleteNote = async (noteId: string) => {
+  const deleteNote = async (noteId: number) => {
     const { error } = await supabase
       .from("notes")
       .delete()
@@ -232,7 +265,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     return { data: true };
   };
 
-  const updateNote = async (noteId: string, title: string, content: string) => {
+  const updateNote = async (noteId: number, title: string, content: string) => {
     const { error } = await supabase
       .from("notes")
       .update({ title, content })
@@ -251,6 +284,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     user,
     loading,
     signInSupabase,
+    signInWithOAuthSupabase,
     signOutSupabase,
     signUpSupabase,
     updateUserProfileSupabase,

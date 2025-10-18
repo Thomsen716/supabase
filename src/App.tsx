@@ -8,7 +8,7 @@ import {
   useParams,
 } from "react-router";
 import { useAuth } from "./Supabase";
-import { AuthProvider } from "./Auth";
+import { AuthProvider, Note } from "./Auth";
 import { SiGoogle, SiFacebook, SiGithub } from "react-icons/si";
 
 function NavBar() {
@@ -553,14 +553,8 @@ function Indstillinger() {
 function TilføjNote() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
-  const { addNote, showNote, user } = useAuth();
-  const navigate = useNavigate();
+  const { addNote, showNote } = useAuth();
   const { noteId } = useParams<{ noteId: string }>();
-
-  if (!user) {
-    navigate("/logind");
-    return null;
-  }
 
   useEffect(() => {
     if (noteId) {
@@ -580,7 +574,7 @@ function TilføjNote() {
       setTitle("");
       setNote("");
     }
-  }, [noteId]);
+  }, [noteId, showNote]);
 
   return (
     <>
@@ -646,7 +640,7 @@ function TilføjNote() {
   );
 }
 
-function RedigerNote({ noteId }: { noteId: string }) {
+function RedigerNote({ noteId }: { noteId: number }) {
   const navigate = useNavigate();
   return (
     <button
@@ -664,8 +658,8 @@ function SletNote({
   noteId,
   setNotes,
 }: {
-  noteId: string;
-  setNotes: React.Dispatch<React.SetStateAction<any[]>>;
+  noteId: number;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
 }) {
   const { deleteNote, listNotes } = useAuth();
   return (
@@ -699,7 +693,7 @@ function SletNote({
 function VisNoter() {
   const { listNotes, user } = useAuth();
   const navigate = useNavigate();
-  const [notes, setNotes] = useState<Array<any>>([]);
+  const [notes, setNotes] = useState<Array<Note>>([]);
 
   useEffect(() => {
     if (!user) {
@@ -799,13 +793,19 @@ function DuErLoggetud() {
 }
 
 function OAuthButtons() {
+  const { signInWithOAuthSupabase } = useAuth();
   return (
     <div className="flex flex-col items-center space-y-4">
       <h2 className="text-gray-500 uppercase font-medium text-sm">
         Eller log ind med
       </h2>
       <div className="flex space-x-4">
-        <button className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400">
+        <button
+          className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
+          onClick={async () => {
+            await signInWithOAuthSupabase("google");
+          }}
+        >
           <SiGoogle className="w-4 h-4 text-white" />
         </button>
 

@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, Provider } from "@supabase/supabase-js";
 import {} from "@supabase/supabase-js";
 import { useContext } from "react";
 import { AuthContext } from "./Auth";
@@ -25,4 +25,6 @@ const useAuth = () => {
   return context;
 };
 
-export { supabase, useAuth };
+const SUPPORTED_PROVIDERS: Provider[] = ["google", "facebook", "github"];
+
+export { supabase, useAuth, SUPPORTED_PROVIDERS };
