@@ -106,6 +106,37 @@ function LogIndSide() {
   );
 }
 
+function tjekAdgangskoderOgEmail(
+  emailField: string,
+  passwordField: string,
+  confirmPasswordField: string
+): boolean {
+  if (passwordField !== confirmPasswordField) {
+    return false;
+  }
+
+  if (passwordField.length < 6) {
+    return false;
+  }
+
+  if (emailField.length === 0) {
+    return false;
+  }
+
+  if (passwordField.length === 0) {
+    return false;
+  }
+
+  if (confirmPasswordField.length === 0) {
+    return false;
+  }
+
+  if (!emailField.includes("@")) {
+    return false;
+  }
+  return true;
+}
+
 function OpretBrugerSide() {
   const [fornavnField, setFornavnField] = useState("");
   const [efternavnField, setEfternavnField] = useState("");
@@ -207,36 +238,18 @@ function OpretBrugerSide() {
               onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
 
-                if (passwordField !== confirmPasswordField) {
-                  alert("Adgangskoderne matcher ikke");
+                const valid = tjekAdgangskoderOgEmail(
+                  emailField,
+                  passwordField,
+                  confirmPasswordField
+                );
+
+                if (!valid) {
+                  alert(
+                    "Tjek venligst dine oplysninger. Adgangskoder skal matche og være mindst 6 tegn lange. Email skal være gyldig."
+                  );
                   return;
                 }
-
-                if (passwordField.length < 6) {
-                  alert("Adgangskoden skal være mindst 6 tegn lang");
-                  return;
-                }
-
-                if (emailField.length === 0) {
-                  alert("Email kan ikke være tom");
-                  return;
-                }
-
-                if (passwordField.length === 0) {
-                  alert("Adgangskode kan ikke være tom");
-                  return;
-                }
-
-                if (confirmPasswordField.length === 0) {
-                  alert("Bekræft adgangskode kan ikke være tom");
-                  return;
-                }
-
-                if (!emailField.includes("@")) {
-                  alert("Email skal være gyldig");
-                  return;
-                }
-
                 const { data, error } = await signUpSupabase(
                   emailField,
                   passwordField,
@@ -248,6 +261,7 @@ function OpretBrugerSide() {
                   console.error(error);
                   return;
                 }
+
                 console.log("Bruger oprettet:", data);
                 setEmailField("");
                 setPasswordField("");
@@ -386,11 +400,46 @@ function Forside() {
   );
 }
 
+function TjekLogindMetoder() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  let loggedInWithEmail = false;
+  let loggedInWithOAuth = false;
+  let emailAddress = "";
+  const OAuthProviders = [];
+
+  if (user?.identities) {
+    for (const identity of user.identities) {
+      if (identity.provider === "email") {
+        loggedInWithEmail = true;
+        emailAddress = identity.identity_data?.email || "";
+      } else {
+        loggedInWithOAuth = true;
+        if (identity.provider == "google") OAuthProviders.push("Google");
+        if (identity.provider == "facebook") OAuthProviders.push("Facebook");
+        if (identity.provider == "github") OAuthProviders.push("GitHub");
+      }
+    }
+  } else {
+    navigate("/logind");
+  }
+  return (
+    <>
+      <h1 className="text-3xl">Indstilinger</h1>
+      {loggedInWithEmail && loggedInWithOAuth && (
+        <p className="mt-4">
+          Du har både logget ind med email-adressen {emailAddress} og via{" "}
+          {OAuthProviders.join(", ")}.
+        </p>
+      )}
+      {loggedInWithEmail && <Indstillinger></Indstillinger>}
+    </>
+  );
+}
+
 function Indstillinger() {
-  const { session, user, updateUserProfileSupabase, getUserProfileSupabase } =
-    useAuth();
-  console.log("Indstillinger", session, user);
-  console.log("Login-metode:", user?.identities[0]?.provider);
+  const { user, updateUserProfileSupabase, getUserProfileSupabase } = useAuth();
+
   const [fornavn, setFornavn] = useState("");
   const [efternavn, setEfternavn] = useState("");
   const [email, setEmail] = useState("");
@@ -415,24 +464,8 @@ function Indstillinger() {
     fetchUserProfile();
   }, [getUserProfileSupabase, user]);
 
-  if (!session || !user) {
-    // Hvis brugeren ikke er logget ind, vis en besked
-    return (
-      <>
-        <h1 className="text-3xl">Indstillinger</h1>
-        <p className="mt-4">Du skal være logget ind for at se denne side.</p>
-      </>
-    );
-  }
-
   return (
     <>
-      <h1 className="text-3xl">Indstilinger</h1>
-      {user && (
-        <p>
-          Logged in with: {user.identities?.map((i) => i.provider).join(", ")}
-        </p>
-      )}
       <p className="mt-4">
         Her kan du ændre dine brugeroplysninger og andre indstillinger.
       </p>
@@ -903,7 +936,7 @@ function App() {
           <Route path="glemt-adgangskode" element={<GlemtAdgangskodeSide />} />
           <Route path="opretbruger" element={<OpretBrugerSide />} />
           <Route path="om" element={<Om />} />
-          <Route path="indstillinger" element={<Indstillinger />} />
+          <Route path="indstillinger" element={<TjekLogindMetoder />} />
           <Route path="tilføjnote" element={<TilføjNote />} />
           <Route path="tilføjnote/:noteId" element={<TilføjNote />} />
           <Route path="visnoter" element={<VisNoter />} />

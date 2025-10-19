@@ -183,10 +183,20 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     firstName: string,
     lastName: string
   ) => {
-    const { error } = await supabase.from("users").upsert(
-      { id: user?.id, first_name: firstName, last_name: lastName }
-      //{ onConflict: "user_id" } // Sikrer, at den kun opdaterer, hvis ID allerede findes
-    );
+    const session = await supabase.auth.getSession();
+    console.log("auth.uid():", session.data.session?.user.id);
+    console.log("user?.id:", user?.id);
+    const { error } = await supabase
+      .from("users")
+      .update(
+        {
+          id: user?.id,
+          first_name: firstName,
+          last_name: lastName,
+        }
+        //{ onConflict: "user_id" } // Sikrer, at den kun opdaterer, hvis ID allerede findes
+      )
+      .eq("id", user?.id);
     if (error) {
       console.error(error);
       return { error };

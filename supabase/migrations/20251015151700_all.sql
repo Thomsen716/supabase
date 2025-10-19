@@ -70,6 +70,11 @@ create policy "users_update_own" on public.users
 for update
 using (auth.uid() = id);
 
+-- Tillad at en bruger kan indsætte sin egen profil
+create policy "users_insert_own" on public.users
+for insert
+with check (auth.uid() = id);
+
 
 -- Tillad at en bruger læser sine egne noter
 create policy "notes_select_own" on public.notes
