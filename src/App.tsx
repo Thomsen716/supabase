@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import {
   Routes,
   Route,
@@ -6,10 +6,12 @@ import {
   Link,
   useNavigate,
   useParams,
+  Navigate,
 } from "react-router";
 import { useAuth } from "./Supabase";
 import { AuthProvider, Note } from "./Auth";
 import { SiGoogle, SiFacebook, SiGithub } from "react-icons/si";
+import Modal from "./Modal";
 
 function NavBar() {
   return (
@@ -594,6 +596,7 @@ function TilføjNote() {
   const [note, setNote] = useState("");
   const { addNote, showNote } = useAuth();
   const { noteId } = useParams<{ noteId: string }>();
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     if (noteId) {
@@ -665,6 +668,7 @@ function TilføjNote() {
                   return;
                 } else {
                   console.log("Note tilføjet:", data);
+                  setModalOpen(true);
                   setTitle("");
                   setNote("");
                 }
@@ -672,6 +676,11 @@ function TilføjNote() {
             >
               {noteId ? "Opdater note" : "Tilføj note"}
             </button>
+            <Modal
+              message="Note gemt!"
+              isOpen={modalOpen}
+              onClose={() => setModalOpen(false)}
+            />
           </div>
         </div>
       </form>
@@ -924,6 +933,18 @@ function GlemtAdgangskodeSide() {
     </>
   );
 }
+type AuthGuardProps = {
+  children: ReactNode;
+};
+
+function AuthGuard({ children }: AuthGuardProps) {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <Navigate to="/logind" replace />;
+
+  return <>{children}</>;
+}
 
 function App() {
   return (
@@ -936,10 +957,40 @@ function App() {
           <Route path="glemt-adgangskode" element={<GlemtAdgangskodeSide />} />
           <Route path="opretbruger" element={<OpretBrugerSide />} />
           <Route path="om" element={<Om />} />
-          <Route path="indstillinger" element={<TjekLogindMetoder />} />
-          <Route path="tilføjnote" element={<TilføjNote />} />
-          <Route path="tilføjnote/:noteId" element={<TilføjNote />} />
-          <Route path="visnoter" element={<VisNoter />} />
+
+          <Route
+            path="indstillinger"
+            element={
+              <AuthGuard>
+                <TjekLogindMetoder />
+              </AuthGuard>
+            }
+          />
+
+          <Route
+            path="tilføjnote"
+            element={
+              <AuthGuard>
+                <TilføjNote />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="tilføjnote/:noteId"
+            element={
+              <AuthGuard>
+                <TilføjNote />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="visnoter"
+            element={
+              <AuthGuard>
+                <VisNoter />
+              </AuthGuard>
+            }
+          />
           <Route path="loggetud" element={<DuErLoggetud />} />
           <Route path="*" element={<SideIkkeFundet />} />
         </Route>
