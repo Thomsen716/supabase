@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, use, useEffect, useState } from "react";
 import {
   Routes,
   Route,
@@ -436,6 +436,58 @@ function TjekLogindMetoder() {
   );
 }
 
+function VælgeSprog() {
+  const [sprog, setSprog] = useState("");
+  const [toastOpen, setToastOpen] = useState(false);
+
+  useEffect(() => {
+    const gemtSprog = localStorage.getItem("sprog");
+    if (gemtSprog) {
+      setSprog(gemtSprog);
+    }
+  }, []);
+
+  const håndterSprogSkift = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const valgtSprog = e.target.value;
+    setSprog(valgtSprog);
+    localStorage.setItem("sprog", valgtSprog);
+    setToastOpen(true);
+  };
+
+  return (
+    <>
+      <h1 className="text-3xl">Vælg sprog</h1>
+      <form className="max-w-lg mx-auto mt-4">
+        <div className="flex flex-col space-y-4">
+          <div>
+            <label
+              htmlFor="sprog"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Vælg dit foretrukne sprog:
+            </label>
+            <select
+              id="sprog"
+              value={sprog}
+              onChange={håndterSprogSkift}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="">Vælg sprog</option>
+              <option value="da">Dansk</option>
+              <option value="en">Engelsk</option>
+            </select>
+          </div>
+        </div>
+      </form>
+      <Toast
+        message="Sprog gemt!"
+        isOpen={toastOpen}
+        onClose={() => setToastOpen(false)}
+      />
+    </>
+  );
+}
+
 function Indstillinger() {
   const { user, updateUserProfileSupabase, getUserProfileSupabase } = useAuth();
 
@@ -584,6 +636,7 @@ function Indstillinger() {
           </div>
         </div>
       </form>
+      <VælgeSprog></VælgeSprog>
     </>
   );
 }
@@ -593,7 +646,7 @@ function TilføjNote() {
   const [note, setNote] = useState("");
   const { addNote, showNote } = useAuth();
   const { noteId } = useParams<{ noteId: string }>();
-  const [modalOpen, setModalOpen] = useState(false);
+  const [toastOpen, setToastOpen] = useState(false);
 
   useEffect(() => {
     if (noteId) {
@@ -665,7 +718,7 @@ function TilføjNote() {
                   return;
                 } else {
                   console.log("Note tilføjet:", data);
-                  setModalOpen(true);
+                  setToastOpen(true);
                   setTitle("");
                   setNote("");
                 }
@@ -675,8 +728,8 @@ function TilføjNote() {
             </button>
             <Toast
               message="Note gemt!"
-              isOpen={modalOpen}
-              onClose={() => setModalOpen(false)}
+              isOpen={toastOpen}
+              onClose={() => setToastOpen(false)}
             />
           </div>
         </div>
