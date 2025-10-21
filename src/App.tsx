@@ -286,28 +286,30 @@ function OpretBrugerSide() {
 function NavBarKnapper() {
   const { user, signOutSupabase } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   return (
     <ul className="flex flex-row space-x-4">
       <li>
         <Link to="forside" className="text-gray-300 hover:text-white">
-          Forside
+          {t("frontpage")}
         </Link>
       </li>
       <li>
         <Link to="om" className="text-gray-300 hover:text-white">
-          Om
+          {t("about")}
         </Link>
       </li>
       {user ? (
         <>
           <li>
             <Link to="visnoter" className="text-gray-300 hover:text-white">
-              Dine noter
+              {t("your_notes")}
             </Link>
           </li>
           <li>
             <Link to="indstillinger" className="text-gray-300 hover:text-white">
-              Indstillinger
+              {t("settings")}
             </Link>
           </li>
           <li>
@@ -325,7 +327,7 @@ function NavBarKnapper() {
               }}
               className="text-gray-300 hover:text-white"
             >
-              Log ud
+              {t("logout")}
             </Link>
           </li>
         </>
@@ -333,12 +335,12 @@ function NavBarKnapper() {
         <>
           <li>
             <Link to="logind" className="text-gray-300 hover:text-white">
-              Log ind
+              {t("login")}
             </Link>
           </li>
           <li>
             <Link to="opretbruger" className="text-gray-300 hover:text-white">
-              Opret bruger
+              {t("signup")}
             </Link>
           </li>
         </>
@@ -390,7 +392,7 @@ function Forside() {
 
   return (
     <>
-      <h1 className="text-3xl">Forside</h1>{" "}
+      <h1 className="text-3xl">{t("frontpage")}</h1>{" "}
       {user ? (
         <p className="mt-4">
           {t("hi")} {userDataToDisplay}. {t("you_are_logged_in")}.
