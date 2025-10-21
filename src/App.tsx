@@ -13,6 +13,7 @@ import { AuthProvider, Note } from "./Auth";
 import { SiGoogle, SiFacebook, SiGithub } from "react-icons/si";
 import Toast from "./Toast";
 import { FaPen } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 function NavBar() {
   return (
@@ -738,6 +739,7 @@ function VisNoter() {
   const { listNotes, user } = useAuth();
   const navigate = useNavigate();
   const [notes, setNotes] = useState<Array<Note>>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!user) {
@@ -828,7 +830,7 @@ function VisNoter() {
         onClick={() => navigate("/tilføjnote")}
       >
         <FaPen className="text-white" />
-        <span>Tilføj note</span>
+        <span>{t("add_note")}</span>
       </button>
     </>
   );
