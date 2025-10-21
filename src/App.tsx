@@ -372,6 +372,7 @@ function Om() {
 
 function Forside() {
   const { user } = useAuth();
+  const { t } = useTranslation(); // kun t er nødvendigt
   let userDataToDisplay;
 
   if (user) {
@@ -391,9 +392,11 @@ function Forside() {
     <>
       <h1 className="text-3xl">Forside</h1>{" "}
       {user ? (
-        <p className="mt-4">Hej {userDataToDisplay}. Du er logget ind.</p>
+        <p className="mt-4">
+          {t("hi")} {userDataToDisplay}. {t("you_are_logged_in")}.
+        </p>
       ) : (
-        <p className="mt-4">Du er ikke logget ind.</p>
+        <p className="mt-4">{t("you_are_not_logged_in")}</p>
       )}
     </>
   );
@@ -437,50 +440,39 @@ function TjekLogindMetoder() {
 }
 
 function VælgeSprog() {
-  const [sprog, setSprog] = useState("");
+  const { i18n } = useTranslation();
+  const [sprog, setSprog] = useState(i18n.language); // browser default
   const [toastOpen, setToastOpen] = useState(false);
-
-  useEffect(() => {
-    const gemtSprog = localStorage.getItem("sprog");
-    if (gemtSprog) {
-      setSprog(gemtSprog);
-    }
-  }, []);
 
   const håndterSprogSkift = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const valgtSprog = e.target.value;
     setSprog(valgtSprog);
-    localStorage.setItem("sprog", valgtSprog);
+    i18n.changeLanguage(valgtSprog); // skifter sproget globalt
     setToastOpen(true);
   };
 
   return (
     <>
-      <h1 className="text-3xl">Vælg sprog</h1>
-      <form className="max-w-lg mx-auto mt-4">
-        <div className="flex flex-col space-y-4">
-          <div>
-            <label
-              htmlFor="sprog"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Vælg dit foretrukne sprog:
-            </label>
-            <select
-              id="sprog"
-              value={sprog}
-              onChange={håndterSprogSkift}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="">Vælg sprog</option>
-              <option value="da">Dansk</option>
-              <option value="en">Engelsk</option>
-            </select>
-          </div>
-        </div>
-      </form>
+      <h1 className="text-3xl mb-4">{i18n.t("choose_language")}</h1>
+      <div className="max-w-lg mx-auto">
+        <label
+          htmlFor="sprog"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          {i18n.t("preferred_language")}
+        </label>
+        <select
+          id="sprog"
+          value={sprog}
+          onChange={håndterSprogSkift}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="da">Dansk</option>
+          <option value="en">Engelsk</option>
+        </select>
+      </div>
       <Toast
-        message="Sprog gemt!"
+        message={i18n.t("language_saved")}
         isOpen={toastOpen}
         onClose={() => setToastOpen(false)}
       />
