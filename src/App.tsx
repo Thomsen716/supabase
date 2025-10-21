@@ -11,7 +11,8 @@ import {
 import { useAuth } from "./Supabase";
 import { AuthProvider, Note } from "./Auth";
 import { SiGoogle, SiFacebook, SiGithub } from "react-icons/si";
-import Modal from "./Modal";
+import Toast from "./Toast";
+import { FaPen } from "react-icons/fa";
 
 function NavBar() {
   return (
@@ -298,11 +299,6 @@ function NavBarKnapper() {
       </li>
       {user ? (
         <>
-          <li>
-            <Link to="tilføjnote" className="text-gray-300 hover:text-white">
-              Tilføj note
-            </Link>
-          </li>
           <li>
             <Link to="visnoter" className="text-gray-300 hover:text-white">
               Dine noter
@@ -676,7 +672,7 @@ function TilføjNote() {
             >
               {noteId ? "Opdater note" : "Tilføj note"}
             </button>
-            <Modal
+            <Toast
               message="Note gemt!"
               isOpen={modalOpen}
               onClose={() => setModalOpen(false)}
@@ -827,6 +823,13 @@ function VisNoter() {
           ))}
         </tbody>
       </table>
+      <button
+        className="fixed bottom-6 left-6 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-medium px-5 py-3 rounded-lg shadow-md flex items-center space-x-2 transition-colors"
+        onClick={() => navigate("/tilføjnote")}
+      >
+        <FaPen className="text-white" />
+        <span>Tilføj note</span>
+      </button>
     </>
   );
 }
