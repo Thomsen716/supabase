@@ -10,7 +10,13 @@ import {
 } from "react-router";
 import { useAuth } from "./Supabase";
 import { AuthProvider, Note } from "./Auth";
-import { SiGoogle, SiFacebook, SiGithub } from "react-icons/si";
+import {
+  SiGoogle,
+  SiFacebook,
+  SiGithub,
+  SiLinkedin,
+  SiX,
+} from "react-icons/si";
 import Toast from "./Toast";
 import { FaPen } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
@@ -26,9 +32,15 @@ function NavBar() {
 
 function Brand() {
   return (
-    <div className="w-full mx-auto flex justify-between items-center">
+    <div className="w-full mx-auto flex gap-2">
+      <img
+        src="/vite.svg"
+        alt="Sterner Solutions logo"
+        className="h-6 sm:h-8 w-auto"
+      />
+
       <Link to="forside" className="text-white text-lg font-bold">
-        Brand
+        Sterner Solutions
       </Link>
     </div>
   );
@@ -361,6 +373,7 @@ function Design() {
         <div className="flex-grow p-4 v-screen">
           <Outlet></Outlet>
         </div>
+        <Footer></Footer>
       </div>
     </>
   );
@@ -376,7 +389,42 @@ function Om() {
   );
 }
 
-function Forside() {
+function Welcome() {
+  return (
+    <section className="bg-gray-50 py-24">
+      <div className="max-w-4xl mx-auto text-center px-4">
+        {/* Hovedoverskrift */}
+        <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
+          Velkommen til Vores Side
+        </h1>
+
+        {/* Underoverskrift */}
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-700 mb-6">
+          Vi skaber fantastiske oplevelser online
+        </h2>
+
+        {/* Brødtekst */}
+        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
+          Uanset om du leder efter inspiration, tips eller løsninger, er du
+          kommet til det rette sted. Vores mission er at levere kvalitet og
+          værdi gennem design, teknologi og innovation.
+        </p>
+
+        {/* Call-to-action */}
+        <div className="mt-8">
+          <a
+            href="#services"
+            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+          >
+            Læs mere
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function News() {
   const { getUserProfileSupabase, user } = useAuth();
   const { t } = useTranslation();
 
@@ -398,6 +446,7 @@ function Forside() {
 
   return (
     <>
+      <Welcome></Welcome>
       <h1 className="text-3xl">{t("news")}</h1>{" "}
       {user ? (
         <p className="mt-4">
@@ -1014,13 +1063,76 @@ function AuthGuard({ children }: AuthGuardProps) {
   return <>{children}</>;
 }
 
+function Footer() {
+  return (
+    <footer className="bg-gray-900 text-gray-200 py-8">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+        {/* Logo / Navn med gradient */}
+        <div className="mb-4 md:mb-0">
+          <h1 className="text-2xl font-extrabold text-white">
+            Sterner Solutions
+          </h1>
+        </div>
+
+        {/* Links */}
+        <div className="flex space-x-6 mb-4 md:mb-0">
+          <a href="#about" className="hover:text-white transition">
+            Om os
+          </a>
+          <a href="#services" className="hover:text-white transition">
+            Services
+          </a>
+          <a href="#contact" className="hover:text-white transition">
+            Kontakt
+          </a>
+        </div>
+
+        {/* Sociale ikoner */}
+        <div className="flex space-x-4 text-xl">
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition"
+          >
+            <SiGithub />
+          </a>
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition"
+          >
+            <SiLinkedin />
+          </a>
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white transition"
+          >
+            <SiX />
+          </a>
+        </div>
+      </div>
+
+      {/* Copyright */}
+      <div className="mt-6 text-center text-sm text-gray-400">
+        © {new Date().getFullYear()} Sterner Solutions. Alle rettigheder
+        forbeholdes.
+      </div>
+    </footer>
+  );
+}
+
 function App() {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/" element={<Design />}>
-          <Route path="" index element={<Forside />} />
-          <Route path="forside" element={<Forside />} />
+          <Route path="" index element={<Welcome />} />
+          <Route path="welcome" element={<Welcome />} />
+          <Route path="news" element={<News />} />
           <Route path="logind" element={<LogIndSide />} />
           <Route path="glemt-adgangskode" element={<GlemtAdgangskodeSide />} />
           <Route path="opretbruger" element={<OpretBrugerSide />} />
