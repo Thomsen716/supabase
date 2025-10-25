@@ -38,6 +38,7 @@ function LogIndSide() {
   const [emailField, setEmailField] = useState("");
   const [passwordField, setPasswordField] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { signInSupabase } = useAuth();
   return (
@@ -50,7 +51,7 @@ function LogIndSide() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
+              {t("email")}
             </label>
             <input
               type="email"
@@ -66,7 +67,7 @@ function LogIndSide() {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Adgangskode
+              {t("password")}
             </label>
             <input
               type="password"
@@ -89,7 +90,7 @@ function LogIndSide() {
                 navigate("/forside");
               }}
             >
-              Log ind
+              {t("login")}
             </button>
           </div>
 
@@ -98,7 +99,7 @@ function LogIndSide() {
               to="/glemt-adgangskode"
               className="text-sm text-indigo-600 hover:text-indigo-500"
             >
-              Glemt Adgangskode?
+              {t("forgot_password")}?
             </Link>
           </div>
           <div className="flex justify-center">
@@ -148,10 +149,11 @@ function OpretBrugerSide() {
   const [passwordField, setPasswordField] = useState("");
   const [confirmPasswordField, setConfirmPasswordField] = useState("");
   const signUpSupabase = useAuth().signUpSupabase;
+  const { t } = useTranslation();
 
   return (
     <>
-      <h1 className="text-3xl">Opret bruger</h1>
+      <h1 className="text-3xl">{t("create_account")}</h1>
       <form className="max-w-lg mx-auto mt-4">
         <div className="flex flex-col space-y-4">
           <div>
@@ -159,7 +161,7 @@ function OpretBrugerSide() {
               htmlFor="Fornavn"
               className="block text-sm font-medium text-gray-700"
             >
-              Fornavn (valgfrit)
+              {t("first_name")}
             </label>
             <input
               type="text"
@@ -174,7 +176,7 @@ function OpretBrugerSide() {
               htmlFor="Fornavn"
               className="block text-sm font-medium text-gray-700"
             >
-              Efternavn (valgfrit)
+              {t("last_name")}
             </label>
             <input
               type="text"
@@ -189,7 +191,7 @@ function OpretBrugerSide() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
+              {t("email")}
             </label>
             <input
               type="email"
@@ -205,7 +207,7 @@ function OpretBrugerSide() {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Adgangskode
+              {t("password")}
             </label>
             <input
               type="password"
@@ -222,7 +224,7 @@ function OpretBrugerSide() {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Bekræft adgangskode
+              {t("confirm_password")}
             </label>
             <input
               type="password"
@@ -274,7 +276,7 @@ function OpretBrugerSide() {
                 setEfternavnField("");
               }}
             >
-              Opret bruger
+              {t("create_account")}
             </button>
           </div>
         </div>
@@ -292,7 +294,7 @@ function NavBarKnapper() {
     <ul className="flex flex-row space-x-4">
       <li>
         <Link to="forside" className="text-gray-300 hover:text-white">
-          {t("frontpage")}
+          {t("news")}
         </Link>
       </li>
       <li>
@@ -365,9 +367,11 @@ function Design() {
 }
 
 function Om() {
+  const { t } = useTranslation();
+
   return (
     <>
-      <h1 className="text-3xl">Om</h1>
+      <h1 className="text-3xl">{t("about")}</h1>
     </>
   );
 }
@@ -392,7 +396,7 @@ function Forside() {
 
   return (
     <>
-      <h1 className="text-3xl">{t("frontpage")}</h1>{" "}
+      <h1 className="text-3xl">{t("news")}</h1>{" "}
       {user ? (
         <p className="mt-4">
           {t("hi")} {userDataToDisplay}. {t("you_are_logged_in")}.
@@ -407,21 +411,21 @@ function Forside() {
 function TjekLogindMetoder() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   let loggedInWithEmail = false;
   let loggedInWithOAuth = false;
-  let emailAddress = "";
-  const OAuthProviders = [];
+  const providers = [];
 
   if (user?.identities) {
     for (const identity of user.identities) {
       if (identity.provider === "email") {
         loggedInWithEmail = true;
-        emailAddress = identity.identity_data?.email || "";
+        providers.push(identity.identity_data?.email || "");
       } else {
         loggedInWithOAuth = true;
-        if (identity.provider == "google") OAuthProviders.push("Google");
-        if (identity.provider == "facebook") OAuthProviders.push("Facebook");
-        if (identity.provider == "github") OAuthProviders.push("GitHub");
+        if (identity.provider == "google") providers.push("Google");
+        if (identity.provider == "facebook") providers.push("Facebook");
+        if (identity.provider == "github") providers.push("GitHub");
       }
     }
   } else {
@@ -429,12 +433,18 @@ function TjekLogindMetoder() {
   }
   return (
     <>
-      <h1 className="text-3xl">Indstilinger</h1>
+      <h1 className="text-3xl">{t("settings")}</h1>
+      <p className="mt-4">{t("settings_text")}</p>
       {loggedInWithEmail && loggedInWithOAuth && (
-        <p className="mt-4">
-          Du har både logget ind med email-adressen {emailAddress} og via{" "}
-          {OAuthProviders.join(", ")}.
-        </p>
+        <>
+          <p className="mt-4">
+            {t("multiple_methods_warning")}{" "}
+            {t("multiple_methods_providers", {
+              providers: providers.join(", "),
+            })}
+            .
+          </p>
+        </>
       )}
       {loggedInWithEmail && <Indstillinger></Indstillinger>}
     </>
@@ -490,6 +500,7 @@ function Indstillinger() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -511,9 +522,6 @@ function Indstillinger() {
 
   return (
     <>
-      <p className="mt-4">
-        Her kan du ændre dine brugeroplysninger og andre indstillinger.
-      </p>
       <form className="max-w-lg mx-auto mt-4">
         <div className="flex flex-col space-y-4">
           <div>
@@ -521,7 +529,7 @@ function Indstillinger() {
               htmlFor="fornavn"
               className="block text-sm font-medium text-gray-700"
             >
-              Fornavn
+              {t("first_name")}
             </label>
             <input
               type="text"
@@ -536,7 +544,7 @@ function Indstillinger() {
               htmlFor="efternavn"
               className="block text-sm font-medium text-gray-700"
             >
-              Efternavn
+              {t("last_name")}
             </label>
             <input
               type="text"
@@ -551,7 +559,7 @@ function Indstillinger() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Email
+              {t("email")}
             </label>
             <input
               type="email"
@@ -567,7 +575,7 @@ function Indstillinger() {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Adgangskode
+              {t("password")}
             </label>
             <input
               type="password"
@@ -583,7 +591,7 @@ function Indstillinger() {
               htmlFor="passwordConfirm"
               className="block text-sm font-medium text-gray-700"
             >
-              Bekræft adgangskode
+              {t("confirm_password")}
             </label>
             <input
               type="password"
@@ -909,10 +917,11 @@ function SideIkkeFundet() {
 
 function OAuthButtons() {
   const { signInWithOAuthSupabase } = useAuth();
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center space-y-4">
       <h2 className="text-gray-500 uppercase font-medium text-sm">
-        Eller log ind med
+        {t("or_continue_with")}
       </h2>
       <div className="flex space-x-4">
         <button
@@ -947,6 +956,8 @@ function OAuthButtons() {
 }
 
 function GlemtAdgangskodeSide() {
+  const { t } = useTranslation();
+
   return (
     <>
       <h1 className="text-3xl">Glemt Adgangskode</h1>
@@ -958,7 +969,7 @@ function GlemtAdgangskodeSide() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Indtast din email for at nulstille din adgangskode
+              {t("reset_password_text")}
             </label>
             <input
               type="email"
@@ -977,7 +988,7 @@ function GlemtAdgangskodeSide() {
                 );
               }}
             >
-              Nulstil Adgangskode
+              {t("reset_password")}
             </button>
           </div>
         </div>

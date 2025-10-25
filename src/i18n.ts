@@ -16,7 +16,9 @@ i18n
           last_name: "Efternavn",
           password: "Adgangskode",
           confirm_password: "Bekræft adgangskode",
+          forgot_password: "Glemt adgangskode",
           frontpage: "Forside",
+          news: "Nyheder",
           login: "Log ind",
           logout: "Log ud",
           signup: "Tilmeld",
@@ -32,6 +34,18 @@ i18n
           settings: "Indstillinger",
           about: "Om",
           create_account: "Opret konto",
+          create_user: "Opret bruger",
+          or_continue_with: "eller fortsæt med",
+          reset_password: "Nulstil adgangskode",
+          reset_password_text:
+            "Indtast din email for at nulstille din adgangskode",
+          settings_text:
+            "Her kan du ændre dine brugeroplysninger og andre indstillinger.",
+          and: "og",
+          multiple_methods_warning:
+            "Du har flere login-metoder tilknyttet denne konto. Vær opmærksom på, at ændring af adgangskoden her muligvis ikke påvirker dine OAuth-login-metoder.",
+          multiple_methods_providers:
+            "De tilknyttede login-metoder er: {{providers}}",
         },
       },
       en: {
@@ -41,7 +55,9 @@ i18n
           last_name: "Last Name",
           password: "Password",
           confirm_password: "Confirm Password",
+          forgot_password: "Forgot Password",
           frontpage: "Frontpage",
+          news: "News",
           login: "Log In",
           logout: "Log Out",
           signup: "Sign Up",
@@ -57,6 +73,17 @@ i18n
           settings: "Settings",
           about: "About",
           create_account: "Create Account",
+          create_user: "Create User",
+          or_continue_with: "or continue with",
+          reset_password: "Reset Password",
+          reset_password_text: "Enter your email to reset your password",
+          settings_text:
+            "Here you can change your user information and other settings.",
+          and: "and",
+          multiple_methods_warning:
+            "You have multiple login methods associated with this account. Please note that changing the password here may not affect your OAuth login methods.",
+          multiple_methods_providers:
+            "The associated login methods are: {{providers}}",
         },
       },
     },
