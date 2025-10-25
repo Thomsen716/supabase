@@ -377,22 +377,24 @@ function Om() {
 }
 
 function Forside() {
-  const { user } = useAuth();
-  const { t } = useTranslation(); // kun t er nødvendigt
-  let userDataToDisplay;
+  const { getUserProfileSupabase, user } = useAuth();
+  const { t } = useTranslation();
 
-  if (user) {
-    if (
-      user.user_metadata &&
-      (user.user_metadata.first_name || user.user_metadata.last_name)
-    ) {
-      userDataToDisplay = `${user.user_metadata.first_name || ""} ${
-        user.user_metadata.last_name || ""
-      }`.trim();
-    } else {
-      userDataToDisplay = user.email;
-    }
-  }
+  const [userDataToDisplay, setUserDataToDisplay] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const { data, error } = await getUserProfileSupabase();
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setUserDataToDisplay(
+        `${data?.first_name || ""} ${data?.last_name || ""}`.trim()
+      );
+    };
+    if (user) fetchUserProfile();
+  }, [getUserProfileSupabase, user]);
 
   return (
     <>
@@ -892,10 +894,13 @@ function VisNoter() {
 }
 
 function DuErLoggetud() {
+  const { t } = useTranslation();
   return (
     <>
-      <h1 className="text-3xl">Du er logget ud</h1>
-      <p className="mt-4">Du er nu logget ud. Vi ses næste gang!</p>
+      <h1 className="text-3xl">{t("logged_out")}</h1>
+      <p className="mt-4">
+        {t("you_are_now_signed_out")}. {t("see_you_next_time")}
+      </p>
     </>
   );
 }
