@@ -2,382 +2,25 @@ import { ReactNode, useEffect, useState } from "react";
 import {
   Routes,
   Route,
-  Outlet,
   Link,
   useNavigate,
   useParams,
   Navigate,
 } from "react-router";
 import { useAuth } from "./Supabase";
-import { AuthProvider, Note } from "./Auth";
-import {
-  SiGoogle,
-  SiFacebook,
-  SiGithub,
-  SiLinkedin,
-  SiX,
-} from "react-icons/si";
-import Toast from "./Toast";
+
+import Toast from "./components/Toast";
 import { FaPen } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
-function NavBar() {
-  return (
-    <nav className="bg-gray-800 p-4 w-full">
-      <Brand></Brand>
-      <NavBarKnapper></NavBarKnapper>
-    </nav>
-  );
-}
-
-function Brand() {
-  return (
-    <div className="w-full mx-auto flex gap-2">
-      <img
-        src="/vite.svg"
-        alt="Sterner Solutions logo"
-        className="h-6 sm:h-8 w-auto"
-      />
-
-      <Link to="forside" className="text-white text-lg font-bold">
-        Sterner Solutions
-      </Link>
-    </div>
-  );
-}
-
-function LogIndSide() {
-  const [emailField, setEmailField] = useState("");
-  const [passwordField, setPasswordField] = useState("");
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-
-  const { signInSupabase } = useAuth();
-  return (
-    <>
-      <h1 className="text-3xl">Log ind</h1>
-      <form className="max-w-lg mx-auto mt-4">
-        <div className="flex flex-col space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("email")}
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={emailField}
-              onChange={(e) => setEmailField(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("password")}
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={passwordField}
-              onChange={(e) => setPasswordField(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <button
-              type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-                await signInSupabase(emailField, passwordField);
-                setEmailField("");
-                setPasswordField("");
-                navigate("/forside");
-              }}
-            >
-              {t("login")}
-            </button>
-          </div>
-
-          <div className="flex justify-center">
-            <Link
-              to="/glemt-adgangskode"
-              className="text-sm text-indigo-600 hover:text-indigo-500"
-            >
-              {t("forgot_password")}?
-            </Link>
-          </div>
-          <div className="flex justify-center">
-            <OAuthButtons></OAuthButtons>
-          </div>
-        </div>
-      </form>
-    </>
-  );
-}
-
-function tjekAdgangskoderOgEmail(
-  emailField: string,
-  passwordField: string,
-  confirmPasswordField: string
-): boolean {
-  if (passwordField !== confirmPasswordField) {
-    return false;
-  }
-
-  if (passwordField.length < 6) {
-    return false;
-  }
-
-  if (emailField.length === 0) {
-    return false;
-  }
-
-  if (passwordField.length === 0) {
-    return false;
-  }
-
-  if (confirmPasswordField.length === 0) {
-    return false;
-  }
-
-  if (!emailField.includes("@")) {
-    return false;
-  }
-  return true;
-}
-
-function OpretBrugerSide() {
-  const [fornavnField, setFornavnField] = useState("");
-  const [efternavnField, setEfternavnField] = useState("");
-  const [emailField, setEmailField] = useState("");
-  const [passwordField, setPasswordField] = useState("");
-  const [confirmPasswordField, setConfirmPasswordField] = useState("");
-  const signUpSupabase = useAuth().signUpSupabase;
-  const { t } = useTranslation();
-
-  return (
-    <>
-      <h1 className="text-3xl">{t("create_account")}</h1>
-      <form className="max-w-lg mx-auto mt-4">
-        <div className="flex flex-col space-y-4">
-          <div>
-            <label
-              htmlFor="Fornavn"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("first_name")}
-            </label>
-            <input
-              type="text"
-              id="Fornavn"
-              value={fornavnField}
-              onChange={(e) => setFornavnField(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="Fornavn"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("last_name")}
-            </label>
-            <input
-              type="text"
-              id="Efternavn"
-              value={efternavnField}
-              onChange={(e) => setEfternavnField(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("email")}
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={emailField}
-              onChange={(e) => setEmailField(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("password")}
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={passwordField}
-              onChange={(e) => setPasswordField(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
-            "
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("confirm_password")}
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={confirmPasswordField}
-              onChange={(e) => setConfirmPasswordField(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
-            "
-              required
-            />
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-
-                const valid = tjekAdgangskoderOgEmail(
-                  emailField,
-                  passwordField,
-                  confirmPasswordField
-                );
-
-                if (!valid) {
-                  alert(
-                    "Tjek venligst dine oplysninger. Adgangskoder skal matche og være mindst 6 tegn lange. Email skal være gyldig."
-                  );
-                  return;
-                }
-                const { data, error } = await signUpSupabase(
-                  emailField,
-                  passwordField,
-                  fornavnField,
-                  efternavnField
-                );
-
-                if (error) {
-                  console.error(error);
-                  return;
-                }
-
-                console.log("Bruger oprettet:", data);
-                setEmailField("");
-                setPasswordField("");
-                setConfirmPasswordField("");
-                setFornavnField("");
-                setEfternavnField("");
-              }}
-            >
-              {t("create_account")}
-            </button>
-          </div>
-        </div>
-      </form>
-    </>
-  );
-}
-
-function NavBarKnapper() {
-  const { user, signOutSupabase } = useAuth();
-  const navigate = useNavigate();
-  const { t } = useTranslation();
-
-  return (
-    <ul className="flex flex-row space-x-4">
-      <li>
-        <Link to="forside" className="text-gray-300 hover:text-white">
-          {t("news")}
-        </Link>
-      </li>
-      <li>
-        <Link to="om" className="text-gray-300 hover:text-white">
-          {t("about")}
-        </Link>
-      </li>
-      {user ? (
-        <>
-          <li>
-            <Link to="visnoter" className="text-gray-300 hover:text-white">
-              {t("your_notes")}
-            </Link>
-          </li>
-          <li>
-            <Link to="indstillinger" className="text-gray-300 hover:text-white">
-              {t("settings")}
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="forside"
-              onClick={async () => {
-                const { error } = await signOutSupabase();
-                if (error) {
-                  console.error(error);
-                  return;
-                } else {
-                  console.log("User signed out successfully");
-                  navigate("/loggetud");
-                }
-              }}
-              className="text-gray-300 hover:text-white"
-            >
-              {t("logout")}
-            </Link>
-          </li>
-        </>
-      ) : (
-        <>
-          <li>
-            <Link to="logind" className="text-gray-300 hover:text-white">
-              {t("login")}
-            </Link>
-          </li>
-          <li>
-            <Link to="opretbruger" className="text-gray-300 hover:text-white">
-              {t("signup")}
-            </Link>
-          </li>
-        </>
-      )}
-    </ul>
-  );
-}
-
-function Design() {
-  return (
-    <>
-      <div className="flex flex-col h-screen">
-        <nav className="bg-gray-800 p-4">
-          <NavBar></NavBar>
-        </nav>
-        <div className="flex-grow p-4 v-screen">
-          <Outlet></Outlet>
-        </div>
-        <Footer></Footer>
-      </div>
-    </>
-  );
-}
+import Design from "./pages/Design";
+import Welcome from "./pages/Welcome";
+import News from "./pages/News";
+import ForgotPassword from "./pages/ForgotPassword";
+import CreateUser from "./pages/CreateUser";
+import SignIn from "./pages/SignIn";
+import { Note } from "./types/NoteInterface";
+import { AuthProvider } from "./Auth";
 
 function Om() {
   const { t } = useTranslation();
@@ -385,76 +28,6 @@ function Om() {
   return (
     <>
       <h1 className="text-3xl">{t("about")}</h1>
-    </>
-  );
-}
-
-function Welcome() {
-  return (
-    <section className="bg-gray-50 py-24">
-      <div className="max-w-4xl mx-auto text-center px-4">
-        {/* Hovedoverskrift */}
-        <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
-          Velkommen til Vores Side
-        </h1>
-
-        {/* Underoverskrift */}
-        <h2 className="text-2xl md:text-3xl font-semibold text-gray-700 mb-6">
-          Vi skaber fantastiske oplevelser online
-        </h2>
-
-        {/* Brødtekst */}
-        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-          Uanset om du leder efter inspiration, tips eller løsninger, er du
-          kommet til det rette sted. Vores mission er at levere kvalitet og
-          værdi gennem design, teknologi og innovation.
-        </p>
-
-        {/* Call-to-action */}
-        <div className="mt-8">
-          <a
-            href="#services"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            Læs mere
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function News() {
-  const { getUserProfileSupabase, user } = useAuth();
-  const { t } = useTranslation();
-
-  const [userDataToDisplay, setUserDataToDisplay] = useState<string>("");
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const { data, error } = await getUserProfileSupabase();
-      if (error) {
-        console.error(error);
-        return;
-      }
-      setUserDataToDisplay(
-        `${data?.first_name || ""} ${data?.last_name || ""}`.trim()
-      );
-    };
-    if (user) fetchUserProfile();
-  }, [getUserProfileSupabase, user]);
-
-  return (
-    <>
-      <Welcome></Welcome>
-      <h1 className="text-3xl">{t("news")}</h1>{" "}
-      {user ? (
-        <p className="mt-4">
-          {t("hi")} {userDataToDisplay}. {t("you_are_logged_in")}.
-        </p>
-      ) : (
-        <p className="mt-4">{t("you_are_not_logged_in")}</p>
-      )}
     </>
   );
 }
@@ -955,13 +528,14 @@ function DuErLoggetud() {
 }
 
 function SideIkkeFundet() {
+  const { t } = useTranslation();
   return (
     <>
-      <h1 className="text-3xl">Side ikke fundet</h1>
+      <h1 className="text-3xl">{t("page_not_found")}</h1>
       <p className="mt-4">
-        Den side, du leder efter, findes ikke. Gå tilbage til{" "}
-        <Link to="/forside" className="text-indigo-600 hover:text-indigo-500">
-          forsiden
+        {t("go_back_home")}{" "}
+        <Link to="/news" className="text-indigo-600 hover:text-indigo-500">
+          {t("home")}
         </Link>
         .
       </p>
@@ -969,87 +543,6 @@ function SideIkkeFundet() {
   );
 }
 
-function OAuthButtons() {
-  const { signInWithOAuthSupabase } = useAuth();
-  const { t } = useTranslation();
-  return (
-    <div className="flex flex-col items-center space-y-4">
-      <h2 className="text-gray-500 uppercase font-medium text-sm">
-        {t("or_continue_with")}
-      </h2>
-      <div className="flex space-x-4">
-        <button
-          className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400"
-          onClick={async () => {
-            await signInWithOAuthSupabase("google");
-          }}
-        >
-          <SiGoogle className="w-4 h-4 text-white" />
-        </button>
-
-        <button
-          className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
-          onClick={async () => {
-            await signInWithOAuthSupabase("facebook");
-          }}
-        >
-          <SiFacebook className="w-4 h-4 text-white" />
-        </button>
-
-        <button
-          className="flex items-center justify-center w-8 h-8 border border-transparent rounded-md shadow-sm bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          onClick={async () => {
-            await signInWithOAuthSupabase("github");
-          }}
-        >
-          <SiGithub className="w-4 h-4 text-white" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function GlemtAdgangskodeSide() {
-  const { t } = useTranslation();
-
-  return (
-    <>
-      <h1 className="text-3xl">Glemt Adgangskode</h1>
-
-      <form className="max-w-lg mx-auto mt-4">
-        <div className="flex flex-col space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              {t("reset_password_text")}
-            </label>
-            <input
-              type="email"
-              id="email"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <button
-              type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
-                e.preventDefault();
-                alert(
-                  "Funktionalitet til nulstilling af adgangskode er ikke implementeret endnu."
-                );
-              }}
-            >
-              {t("reset_password")}
-            </button>
-          </div>
-        </div>
-      </form>
-    </>
-  );
-}
 type AuthGuardProps = {
   children: ReactNode;
 };
@@ -1063,68 +556,6 @@ function AuthGuard({ children }: AuthGuardProps) {
   return <>{children}</>;
 }
 
-function Footer() {
-  return (
-    <footer className="bg-gray-900 text-gray-200 py-8">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
-        {/* Logo / Navn med gradient */}
-        <div className="mb-4 md:mb-0">
-          <h1 className="text-2xl font-extrabold text-white">
-            Sterner Solutions
-          </h1>
-        </div>
-
-        {/* Links */}
-        <div className="flex space-x-6 mb-4 md:mb-0">
-          <a href="#about" className="hover:text-white transition">
-            Om os
-          </a>
-          <a href="#services" className="hover:text-white transition">
-            Services
-          </a>
-          <a href="#contact" className="hover:text-white transition">
-            Kontakt
-          </a>
-        </div>
-
-        {/* Sociale ikoner */}
-        <div className="flex space-x-4 text-xl">
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition"
-          >
-            <SiGithub />
-          </a>
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition"
-          >
-            <SiLinkedin />
-          </a>
-          <a
-            href="https://twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white transition"
-          >
-            <SiX />
-          </a>
-        </div>
-      </div>
-
-      {/* Copyright */}
-      <div className="mt-6 text-center text-sm text-gray-400">
-        © {new Date().getFullYear()} Sterner Solutions. Alle rettigheder
-        forbeholdes.
-      </div>
-    </footer>
-  );
-}
-
 function App() {
   return (
     <AuthProvider>
@@ -1133,9 +564,9 @@ function App() {
           <Route path="" index element={<Welcome />} />
           <Route path="welcome" element={<Welcome />} />
           <Route path="news" element={<News />} />
-          <Route path="logind" element={<LogIndSide />} />
-          <Route path="glemt-adgangskode" element={<GlemtAdgangskodeSide />} />
-          <Route path="opretbruger" element={<OpretBrugerSide />} />
+          <Route path="logind" element={<SignIn />} />
+          <Route path="glemt-adgangskode" element={<ForgotPassword />} />
+          <Route path="opretbruger" element={<CreateUser />} />
           <Route path="om" element={<Om />} />
 
           <Route

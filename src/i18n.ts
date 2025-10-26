@@ -49,6 +49,10 @@ i18n
             "Du har flere login-metoder tilknyttet denne konto. Vær opmærksom på, at ændring af adgangskoden her muligvis ikke påvirker dine OAuth-login-metoder.",
           multiple_methods_providers:
             "De tilknyttede login-metoder er: {{providers}}",
+          copyright: "Alle rettigheder forbeholdes.",
+          page_not_found: "Siden blev ikke fundet",
+          go_back_home: "Den side, du leder efter, findes ikke. Gå tilbage til",
+          home: "nyheder",
         },
       },
       en: {
@@ -90,6 +94,11 @@ i18n
             "You have multiple login methods associated with this account. Please note that changing the password here may not affect your OAuth login methods.",
           multiple_methods_providers:
             "The associated login methods are: {{providers}}",
+          copyright: "All rights reserved",
+          page_not_found: "Page not found",
+          go_back_home:
+            "The page you are looking for does not exist. Go back to",
+          home: "news",
         },
       },
     },
