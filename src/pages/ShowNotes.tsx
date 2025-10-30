@@ -1,0 +1,159 @@
+import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { FaPen } from "react-icons/fa";
+import { useNavigate } from "react-router";
+import { useAuth } from "../Supabase";
+import { Note } from "../types/NoteInterface";
+
+function ShowNotes() {
+  const { listNotes, user } = useAuth();
+  const navigate = useNavigate();
+  const [notes, setNotes] = useState<Array<Note>>([]);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/logind");
+    } else {
+      const fetchNotes = async () => {
+        const { data, error } = await listNotes();
+        if (error) {
+          console.error("Fejl ved hentning af noter:", error);
+          return;
+        }
+        console.log("Noter hentet:", data);
+        setNotes(data || []);
+      };
+      fetchNotes();
+    }
+  }, [listNotes, navigate, user]);
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <>
+      <h1 className="text-3xl">Dine noter</h1>
+
+      <p className="mt-4">Her kan du se dine noter.</p>
+
+      <table className="min-w-full divide-y divide-gray-200 mt-4">
+        <thead className="bg-gray-50">
+          <tr>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Titel
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Note
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Oprettet
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
+              Opdateret
+            </th>
+            <th
+              scope="col"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            ></th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {notes.map((note) => (
+            <tr key={note.id}>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {note.title}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {note.content}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {new Date(note.created_at).toLocaleString()}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {new Date(note.updated_at).toLocaleString()}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <EditNote noteId={note.id} />
+                {" | "}
+                <DeleteNote noteId={note.id} setNotes={setNotes} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button
+        className="fixed bottom-6 left-6 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-medium px-5 py-3 rounded-lg shadow-md flex items-center space-x-2 transition-colors"
+        onClick={() => navigate("/tilføjnote")}
+      >
+        <FaPen className="text-white" />
+        <span>{t("add_note")}</span>
+      </button>
+    </>
+  );
+}
+
+function EditNote({ noteId }: { noteId: number }) {
+  const navigate = useNavigate();
+  return (
+    <button
+      className="text-red-600 hover:text-red-800"
+      onClick={async () => {
+        navigate("/tilføjnote/" + noteId); // Placeholder navigation
+      }}
+    >
+      Rediger
+    </button>
+  );
+}
+
+function DeleteNote({
+  noteId,
+  setNotes,
+}: {
+  noteId: number;
+  setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
+}) {
+  const { deleteNote, listNotes } = useAuth();
+  return (
+    <button
+      className="text-red-600 hover:text-red-800"
+      onClick={async () => {
+        const { data, error } = await deleteNote(noteId);
+        if (error) {
+          console.error("Fejl ved sletning af note:", error);
+          alert("Fejl ved sletning af note.");
+          return;
+        } else {
+          console.log("Note slettet:", data);
+          alert("Note slettet.");
+          const { data: updatedNotes, error: listError } = await listNotes();
+          if (listError) {
+            console.error("Fejl ved opdatering af noter:", listError);
+            return;
+          }
+          if (updatedNotes) {
+            setNotes(updatedNotes);
+          }
+        }
+      }}
+    >
+      Slet
+    </button>
+  );
+}
+
+export default ShowNotes;
