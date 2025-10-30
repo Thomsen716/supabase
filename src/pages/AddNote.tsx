@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import Toast from "../components/Toast";
 import { useAuth } from "../Supabase";
+import { Button } from "../components/Button";
 
 function AddNote() {
   const [title, setTitle] = useState("");
@@ -67,9 +68,9 @@ function AddNote() {
             ></textarea>
           </div>
           <div>
-            <button
+            <Button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              fullWidth={true}
               onClick={async (e: React.MouseEvent<HTMLButtonElement>) => {
                 e.preventDefault();
                 console.log("Tilføj note:", title, note);
@@ -87,7 +88,7 @@ function AddNote() {
               }}
             >
               {noteId ? "Opdater note" : "Tilføj note"}
-            </button>
+            </Button>
             <Toast
               message="Note gemt!"
               isOpen={toastOpen}

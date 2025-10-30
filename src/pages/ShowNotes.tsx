@@ -4,6 +4,7 @@ import { FaPen } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useAuth } from "../Supabase";
 import { Note } from "../types/NoteInterface";
+import { Button } from "../components/Button";
 
 function ShowNotes() {
   const { listNotes, user } = useAuth();
@@ -95,13 +96,10 @@ function ShowNotes() {
           ))}
         </tbody>
       </table>
-      <button
-        className="fixed bottom-6 left-6 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white font-medium px-5 py-3 rounded-lg shadow-md flex items-center space-x-2 transition-colors"
-        onClick={() => navigate("/tilføjnote")}
-      >
+      <Button onClick={() => navigate("/tilføjnote")}>
         <FaPen className="text-white" />
         <span>{t("add_note")}</span>
-      </button>
+      </Button>
     </>
   );
 }
