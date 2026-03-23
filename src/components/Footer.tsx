@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { SiGithub, SiLinkedin, SiX } from "react-icons/si";
+import { FaLinkedinIn } from "react-icons/fa6";
+import { SiGithub, SiX } from "react-icons/si";
 
 function Footer() {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ function Footer() {
             rel="noopener noreferrer"
             className="hover:text-white transition"
           >
-            <SiLinkedin />
+            <FaLinkedinIn />
           </a>
           <a
             href="https://twitter.com"
